@@ -1,99 +1,99 @@
-function schools(times){
-    var SCHOOLS = [
-        {
-            name: 'Sunset Valley',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "M1",
-        },{
-            name: 'Rodriguez',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "M1",
-        },{
-            name: 'Hart',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "T1",
-        },{
-            name: 'Perez',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "W1",
-        },{
-            name: 'Padron',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "W1",
-        },{
-            name: 'Andrews',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "R1",
-        },{
-            name: 'Gallindo',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "R1",
-        },{
-            name: 'Blanton',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "R1",
-        },{
-            name: 'Boys and Girls Club',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "M2",
-        },{
-            name: 'NYOS M',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "T2",
-        },{
-            name:  'Martin',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "T2",
-        },{
-            name:  'Ponzu',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "W2",
-        },{
-            name:  'Kitty',
-            students: 0, 
-            rides: 0,
-            studentList: [],
-            capacity: 10,
-            time: "R2",
-        },
-    ];
+var SCHOOLS = [
+    {
+        name: 'Sunset Valley',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "M1",
+    },{
+        name: 'Rodriguez',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "M1",
+    },{
+        name: 'Hart',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "T1",
+    },{
+        name: 'Perez',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "W1",
+    },{
+        name: 'Padron',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "W1",
+    },{
+        name: 'Andrews',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "R1",
+    },{
+        name: 'Gallindo',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "R1",
+    },{
+        name: 'Blanton',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "R1",
+    },{
+        name: 'Boys and Girls Club',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "M2",
+    },{
+        name: 'NYOS M',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "T2",
+    },{
+        name:  'Martin',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "T2",
+    },{
+        name:  'Ponzu',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "W2",
+    },{
+        name:  'Kitty',
+        students: 0, 
+        rides: 0,
+        studentList: [],
+        capacity: 10,
+        time: "R2",
+    },
+];
 
+function schools(times){
     for(var time in times){ 
         for(var school in SCHOOLS){
              if(times[time].id === SCHOOLS[school].time){
@@ -148,7 +148,7 @@ function TimeSlot(time){
         schools: []},
     ];
     schools(TIMES);
-    console.log(TIMES);
+    //console.log(TIMES);
   
     return TIMES.map((time) => (
       <>{TimeSlot(time)}</>
