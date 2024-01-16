@@ -1,7 +1,7 @@
 import './App.css';
 import axios from 'axios';
 import allTimeSlots from './timeSlots';
-//import SCHOOLS from './configs';
+import {SCHOOLS, TIMES} from './configs';
 import Button from '@mui/material/Button';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
