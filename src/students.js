@@ -2,8 +2,6 @@ import {SCHOOLS, TIMES} from './configs';
 import { allTimeSlots, renderSchools } from './timeSlots';
 
 function renderStudent(student){
-    //student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""} 
-    //^ for student className
     return ( //left out setnoderef, listeners, attributes, style. add later for drag n drop
       <div key={student.eid} id={student.eid} role="button" >
           <div className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
@@ -53,9 +51,6 @@ function renderStudent(student){
 
   function populateStudents(studentList){
     studentList.map(addStudent);
-    //schoolReports();
-    //for
-   // renderSchools(SCHOOLS);
   }
 
 export {renderStudent, populateStudents};
