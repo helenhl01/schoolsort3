@@ -1,7 +1,9 @@
 import './App.css';
 import axios from 'axios';
-import allTimeSlots from './timeSlots';
+import { useState } from 'react';
+import AllTimeSlots from './timeSlots';
 import {SCHOOLS, TIMES} from './configs';
+import {populateStudents, renderStudent} from './students';
 import Button from '@mui/material/Button';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
@@ -20,19 +22,19 @@ const theme = createTheme({
   },
 });
 
-function UploadFile(){   
+function UploadFile({setDisplayStudents}){   
   var uploaded;
   var studentList;
   const onChangeHandler=event=>{
     const selectedFile = event.target.files[0];
     uploaded = new FormData();
     uploaded.append("file", selectedFile);
-    console.log(uploaded.get("file"));
+    //console.log(uploaded.get("file"));
     axios.post("http://localhost:8000/upload", uploaded)
     .then(response => {
-      studentList = response.data;
-      console.log(studentList);
-      //populateStudents(studentList, SCHOOLS);
+      studentList = response.data; //contains the json object array of students
+      populateStudents(studentList, SCHOOLS);
+      setDisplayStudents(true);
     })
     
   }
@@ -45,17 +47,26 @@ function UploadFile(){
   )
 } 
 
-/*function populateStudents(studentList, schools){
-  console.log(studentList);
-  console.log(schools);
-} */
-function App() {
 
+
+function schoolReports(){
+  for(var sch in SCHOOLS){
+    console.log(SCHOOLS[sch].name + " has " + SCHOOLS[sch].students + " students and " + SCHOOLS[sch].rides + " rides");  
+    console.log(SCHOOLS[sch].studentList);
+  }
+}
+
+
+
+
+
+function App() {
+  const [displayStudents, setDisplayStudents] = useState('');
   return (
     <ThemeProvider theme={theme}> <br />
-    <UploadFile/> <br />
+    <UploadFile setDisplayStudents={setDisplayStudents}/> <br />
     <div className="App" >
-      {allTimeSlots()}
+      <AllTimeSlots/>
     </div>
     </ThemeProvider>
     
