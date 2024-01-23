@@ -11,8 +11,8 @@ function schools(times){
     }  
 }
 
-function renderSchools(schools, displayStudents, setDisplayStudents){ //ok i need this to be called when i call populate student
-  console.log("schools beingx ");
+function renderSchools(schools){ //ok i need this to be called when i call populate student
+  console.log("schools being ");
     for(var sch in schools){
       console.log(schools[sch].name + " has " + schools[sch].students + " students and " + schools[sch].rides + " rides");
     }
@@ -24,28 +24,28 @@ function renderSchools(schools, displayStudents, setDisplayStudents){ //ok i nee
     ));
 }
 
-function TimeSlot(time, displayStudents, setDisplayStudents){
+function TimeSlot(time){
     if(time.orange){
       return (
         <div className="timeSlot orangeTimeSlot" key={time.id}>
         <h4 >{time.timeName}</h4>
-        <>{renderSchools(time.schools, displayStudents, setDisplayStudents)}</>
+        <>{renderSchools(time.schools)}</>
         </div>)
     }
     else{
       return (
         <div className="timeSlot" key={time.id}>
         <h4 >{time.timeName}</h4>
-        <>{renderSchools(time.schools, displayStudents, setDisplayStudents)}</>
+        <>{renderSchools(time.schools)}</>
         </div>)
     }
   }
   
-function allTimeSlots(displayStudents, setDisplayStudents){ 
+function allTimeSlots(){ 
   schools(TIMES);
 
   return TIMES.map((time) => (
-    <>{TimeSlot(time, displayStudents, setDisplayStudents)}</>
+    <>{TimeSlot(time)}</>
   ));
 }
 
