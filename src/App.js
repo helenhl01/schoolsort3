@@ -2,6 +2,7 @@ import './App.css';
 import axios from 'axios';
 import allTimeSlots from './timeSlots';
 import {SCHOOLS, TIMES} from './configs';
+import {populateStudents, renderStudent} from './students';
 import Button from '@mui/material/Button';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
@@ -30,9 +31,8 @@ function UploadFile(){
     console.log(uploaded.get("file"));
     axios.post("http://localhost:8000/upload", uploaded)
     .then(response => {
-      studentList = response.data;
-      console.log(studentList);
-      //populateStudents(studentList, SCHOOLS);
+      studentList = response.data; //contains the json object array of students
+      populateStudents(studentList, SCHOOLS);
     })
     
   }
@@ -45,10 +45,19 @@ function UploadFile(){
   )
 } 
 
-/*function populateStudents(studentList, schools){
-  console.log(studentList);
-  console.log(schools);
-} */
+
+
+function schoolReports(){
+  for(var sch in SCHOOLS){
+    console.log(SCHOOLS[sch].name + " has " + SCHOOLS[sch].students + " students and " + SCHOOLS[sch].rides + " rides");  
+    console.log(SCHOOLS[sch].studentList);
+  }
+}
+
+
+
+
+
 function App() {
 
   return (
