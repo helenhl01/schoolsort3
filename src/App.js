@@ -7,6 +7,9 @@ import {populateStudents, renderStudent} from './students';
 import Button from '@mui/material/Button';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
+import {DndContext} from '@dnd-kit/core';
+import handleDragEnd from './dragdrophandler';
+
 
 const theme = createTheme({
   palette: {
@@ -57,17 +60,15 @@ function schoolReports(){
 }
 
 
-
-
-
 function App() {
   const [displayStudents, setDisplayStudents] = useState('');
+  //within dndcontext tag  onDragEnd={handleDragEnd}
   return (
     <ThemeProvider theme={theme}> <br />
     <UploadFile setDisplayStudents={setDisplayStudents}/> <br />
-    <div className="App" >
+    <DndContext onDragEnd={handleDragEnd}>
       <AllTimeSlots/>
-    </div>
+      </DndContext>
     </ThemeProvider>
     
   );
