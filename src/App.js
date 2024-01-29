@@ -25,32 +25,28 @@ const theme = createTheme({
   },
 });
 
-function UploadFile({setDisplayStudents}){   
-  var uploaded;
-  var studentList;
-  const onChangeHandler=event=>{
+function UploadFile({rerender}) {
+  const onChangeHandler = (event) => {
     const selectedFile = event.target.files[0];
-    uploaded = new FormData();
+    let uploaded = new FormData();
     uploaded.append("file", selectedFile);
-    //console.log(uploaded.get("file"));
+
     axios.post("http://localhost:8000/upload", uploaded)
-    .then(response => {
-      studentList = response.data; //contains the json object array of students
-      populateStudents(studentList, SCHOOLS);
-      setDisplayStudents(true);
-    })
-    
+      .then(response => {
+        let studentList = response.data;
+        populateStudents(studentList);
+        rerender();
+    });
   }
+
   return(
     <div>
-    <Button  variant="contained" component="label" color="primary" >Upload File
-      <input type="file" name="file" hidden onChange={onChangeHandler} /> 
-    </Button> 
+      <Button  variant="contained" component="label" color="primary" >Upload File
+        <input type="file" name="file" hidden onChange={onChangeHandler} />
+      </Button>
     </div>
   )
-} 
-
-
+}
 
 function schoolReports(){
   for(var sch in SCHOOLS){
@@ -59,18 +55,60 @@ function schoolReports(){
   }
 }
 
+function download(){
+  const students = [];
+  let csv = "";
+  for (const time of TIMES) {
+    for (const sch of time.schools){
+      csv += sch.name + "\n";
+      for (const st of sch.studentList) {
+        st.schoolName = sch.name;
+        students.push(st);
+        csv += "," + st.firstName + " " + st.lastName;
+        if (st.carSpace) {csv += "," + st.carSpace;}
+        else {csv += ",";}
+        if (st.po && st.po === true) {
+          csv += ",PO";
+        } else if (st.exec && st.exec === true) {
+          csv += ",Exec";
+        } else {
+          csv += ",";
+        }
+        csv += "," + st.eid + "," + st.email +"," + st.phone + "\n";
+      }
+    }
+  }
+
+  const fileData = JSON.stringify(students);
+  const blob = new Blob([fileData], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.download = "seek-students.json";
+  link.href = url;
+  link.click();
+
+  const blob2 = new Blob([csv], { type: "text/plain" });
+  const url2 = URL.createObjectURL(blob2);
+  const link2 = document.createElement("a");
+  link2.download = "seek-schedule.csv";
+  link2.href = url2;
+  link2.click();
+}
+
 
 function App() {
-  const [displayStudents, setDisplayStudents] = useState('');
-  //within dndcontext tag  onDragEnd={handleDragEnd}
+  const [dummy, setDummy] = useState(null);
   return (
     <ThemeProvider theme={theme}> <br />
-    <UploadFile setDisplayStudents={setDisplayStudents}/> <br />
-    <DndContext onDragEnd={handleDragEnd}>
-      <AllTimeSlots/>
+      <div className="horiz-box">
+        <UploadFile rerender={() => setDummy(true)}/>
+        <Button variant="contained" component="label" color="primary" onClick={ () => download({TIMES})}>Generate File</Button>
+      </div>
+      <br/>
+      <DndContext onDragEnd={handleDragEnd}>
+        <AllTimeSlots/>
       </DndContext>
     </ThemeProvider>
-    
   );
 }
 
