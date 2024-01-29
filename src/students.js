@@ -1,9 +1,19 @@
 import {SCHOOLS, TIMES} from './configs';
 import { allTimeSlots, renderSchools } from './timeSlots';
 
-function renderStudent(student){
-    return ( //left out setnoderef, listeners, attributes, style. add later for drag n drop
-      <div key={student.eid} id={student.eid} role="button" >
+import {useDraggable} from '@dnd-kit/core';
+
+function RenderStudent({student}){
+  //console.log(student);
+  const {attributes, listeners, setNodeRef, transform} = useDraggable({
+      id: student, //do i need to change id?
+      //data: student.schoolName,
+    });
+    const style = transform ? {
+      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    } : undefined;
+    return (
+      <div key={student.eid} id={student.eid} role="button" ref={setNodeRef} style={style} {...listeners} {...attributes}>
           <div className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
             <p>{student.firstName + " " + student.lastName}</p>
             {tooltip(student)} 
@@ -53,4 +63,4 @@ function renderStudent(student){
     studentList.map(addStudent);
   }
 
-export {renderStudent, populateStudents};
+export {RenderStudent, populateStudents};
