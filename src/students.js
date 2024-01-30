@@ -59,8 +59,4 @@ function RenderStudent({student}){
     }
   } 
 
-  function populateStudents(studentList){
-    studentList.map(addStudent);
-  }
-
-export {RenderStudent, populateStudents};
+export {RenderStudent, addStudent};
