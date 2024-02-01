@@ -9,12 +9,11 @@ function handleDragEnd(event) {
 }
   
 function dataTransfer({student, dest}){ 
-    var src = SCHOOLS.find(school => school.name === student.schoolName); //need to handle if comnig from unsorted
-    console.log(student);
-    console.log(dest);
+    var src = SCHOOLS.find(school => school.name === student.schoolName)
+    if(src === undefined){src = SCHOOLS.find(school => school.name === "Unsorted");}
     if(validDrop({student, dest})){
         src.studentList.splice(src.studentList.indexOf(student), 1);
-        student.schoolName = dest.name;
+        student.schoolName = dest.name=== "Unsorted" ? undefined : dest.name;
         dest.studentList.push(student);
     }
     else{

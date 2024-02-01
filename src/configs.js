@@ -90,7 +90,14 @@ var SCHOOLS = [
         studentList: [],
         capacity: 10,
         time: "R2",
-    },
+    },{
+      name:  'Unsorted',
+      students: 0, 
+      rides: 0,
+      studentList: [],
+      capacity: 999,
+      time: "unsorted",
+  },
 ];
 
 var TIMES = [ 
@@ -110,6 +117,8 @@ var TIMES = [
       schools: []},
     {id: 'R2', timeName: 'Thursday 3:30-5:30', orange: true, 
       schools: []},
+    {id: 'unsorted', timeName: 'Unsorted', orange: false, 
+    schools: []},
   ];
 
 export {SCHOOLS, TIMES};
