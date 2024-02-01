@@ -31,9 +31,13 @@ function download(){
   let csv = "";
   for (const time of TIMES) {
     for (const sch of time.schools){
+      if(sch.name === "Unsorted"){
+        for(const st of sch.studentList){
+          students.push(st);}
+        continue;
+      } //don't export unsorted students to csv 
       csv += sch.name + "\n";
       for (const st of sch.studentList) {
-        st.schoolName = sch.name;
         students.push(st);
         csv += "," + st.firstName + " " + st.lastName;
         if (st.carSpace) {csv += "," + st.carSpace;}
@@ -49,7 +53,7 @@ function download(){
       }
     }
   }
-
+//export unsorted students to json but not csv
   const fileData = JSON.stringify(students);
   const blob = new Blob([fileData], { type: "text/plain" });
   const url = URL.createObjectURL(blob);

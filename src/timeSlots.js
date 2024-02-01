@@ -20,7 +20,7 @@ function RenderSchool({school}){
     color: isOver ? 'green' : undefined,
   };
     return (
-        <div className="school" ref={setNodeRef} style={style} key={school.name} id={school.name}>
+        <div className={`school  ${school.time == 'unsorted' ? "hidden" : ""}`} ref={setNodeRef} style={style} key={school.name} id={school.name}>
             <p className="schoolNameText" >{school.name}</p>
             {school.studentList.map((student) => <RenderStudent student={student} />)}
         </ div>
@@ -30,8 +30,8 @@ function RenderSchool({school}){
 function AllTimeSlots(){ 
   schools(TIMES);
 
-  return TIMES.map((time) => 
-      (<div className={`timeSlot  ${time.orange ? "orangeTimeSlot" : ""}`} key={time.id}>
+  return TIMES.map((time, index) => 
+      (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")}`} key={time.id}>
       <h4 >{time.timeName}</h4>
       {time.schools.map((school) => 
         (<RenderSchool school={school} />)
