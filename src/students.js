@@ -10,7 +10,12 @@ function RenderStudent({student}){
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : {});
   style.visibility = "visible";
-  style['background-color'] = "white";
+  if(student.po){style['background-color'] = "#FEF5E7";}
+    else if(student.exec){
+      style['background-color'] = "#FAD7A0";
+      style['border'] = "2px solid #FAD7A0";}
+    else{style['background-color'] = "white";}
+
   return (
     <div >
     <div key={student.eid} id={student.eid} role="button" ref={setNodeRef} style={style} {...listeners} {...attributes} className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
@@ -46,6 +51,7 @@ function RenderStudent({student}){
     if(student.schoolName === undefined || sch === undefined){
       sch = SCHOOLS.find(school => school.time === "unsorted");
       sch.studentList.push(student);
+      sch.students++;
     }
     else{
       if(!sch.studentList.includes(student)){

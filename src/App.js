@@ -41,6 +41,8 @@ function App() {
       <div className="horiz-box">
         <UploadFile rerender={() => setDummy(true)}/>
         <Button variant="contained" component="label" color="primary" onClick={ () => download({TIMES})}>Generate File</Button>
+        <Button variant="contained" component="label" color="primary" onClick={() => console.log("sort button clicked")}>Sort!</Button>
+        <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
       </div>
       <br/>
       <DndContext onDragEnd={handleDragEnd}>
