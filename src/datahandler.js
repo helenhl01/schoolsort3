@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { addStudent } from './students';
+import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
-import {SCHOOLS, TIMES} from './configs';
+import {SCHOOLS, TIMES} from './configs.js';
 
 function UploadFile({ rerender }) {
   const onChangeHandler = (event) => {
@@ -11,11 +11,26 @@ function UploadFile({ rerender }) {
 
     axios.post("http://localhost:8000/upload", uploaded)
       .then(response => {
-        let studentList = response.data;
+        let studentList = response.data; //make global and accessible for when sort is called. 
+        console.log(typeof studentList);
+        console.log(studentList);
         studentList.map(addStudent);
         rerender();
+        return studentList;
+      }).then(studentList => {
+        //console.log(studentList);
+        const data = {
+          studentList: studentList,
+          //.SCHOOLS: SCHOOLS, // Assuming SCHOOLS is another variable
+        };
+        return axios.post("http://localhost:8000/sort", data); // Use studentList in the second then block
+      })
+      .then(response => {
+        console.log(response);
+        //rerender(); // Call rerender here if needed after both requests finish
       });
-  };
+    };
+
 
   return (
     <div>

@@ -1,5 +1,5 @@
 import {SCHOOLS, TIMES} from './configs.js';
-import {RenderStudent} from './students';
+import {RenderStudent} from './students.js';
 import {useDroppable} from '@dnd-kit/core';
 
 function schools(times){

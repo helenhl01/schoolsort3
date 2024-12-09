@@ -1,4 +1,4 @@
-import {SCHOOLS, TIMES} from './configs';
+import {SCHOOLS, TIMES} from './configs.js';
 import {useDraggable} from '@dnd-kit/core';
 
 function RenderStudent({student}){
@@ -10,11 +10,11 @@ function RenderStudent({student}){
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : {});
   style.visibility = "visible";
-  if(student.po){style['background-color'] = "#FEF5E7";}
+  if(student.po){style['backgroundColor'] = "#FEF5E7";}
     else if(student.exec){
-      style['background-color'] = "#FAD7A0";
+      style['backgroundColor'] = "#FAD7A0";
       style['border'] = "2px solid #FAD7A0";}
-    else{style['background-color'] = "white";}
+    else{style['backgroundColor'] = "white";}
 
   return (
     <div >

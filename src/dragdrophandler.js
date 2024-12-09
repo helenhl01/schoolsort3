@@ -1,4 +1,4 @@
-import {SCHOOLS, TIMES} from './configs';
+import {SCHOOLS, TIMES} from './configs.js';
 
 function handleDragEnd(event) {
     const {over, active} = event;
