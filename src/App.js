@@ -1,13 +1,13 @@
 import './App.css';
 import { useState } from 'react';
-import AllTimeSlots from './timeSlots';
-import {SCHOOLS, TIMES} from './configs';
+import AllTimeSlots from './timeSlots.js';
+import {SCHOOLS, TIMES} from './configs.js';
 import Button from '@mui/material/Button';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
 import {DndContext} from '@dnd-kit/core';
-import handleDragEnd from './dragdrophandler';
-import { UploadFile, download } from './datahandler';
+import handleDragEnd from './dragdrophandler.js';
+import { UploadFile, download } from './datahandler.js';
 
 
 const theme = createTheme({

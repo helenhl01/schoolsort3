@@ -121,4 +121,16 @@ var TIMES = [
     schools: []},
   ];
 
-export {SCHOOLS, TIMES};
+const timeSlotMap = {
+  "M1": "monday1",
+  "M2": "monday2",
+  "T1": "tuesday1",
+  "T2": "tuesday2",
+  "W1": "wednesday1",
+  "W2": "wednesday2",
+  "R1": "thursday1",
+  "R2": "thursday2",
+  "F1": "friday1",
+  "F2": "friday2"
+};
+export {SCHOOLS, TIMES, timeSlotMap};
