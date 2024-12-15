@@ -54,11 +54,13 @@ app.post('/sort', (req, res) =>{
   //console.log(SCHOOLS);
   //console.log(req.body.SCHOOLS);
   //somehow get lists of school obejcts here. send to server?
+  //console.log("sort function called 1");
   sort(req.body.studentList);
   return ("yes");
 })
 
-function sort(studentList){
+function sort(studentList){ //being callex dprematurely
+  //console.log("sort function called");
   for(const school of SCHOOLS){
     let i = 0;
     while((school.rides < school.capacity && (i < studentList.length))){
@@ -83,6 +85,7 @@ function sort(studentList){
 }
 
 function addStudent(school, student){
+  //console.log("called");
   school.studentList.push(student);
   school.students++;
   if(student.carSpace){

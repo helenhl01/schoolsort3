@@ -8,6 +8,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import {DndContext} from '@dnd-kit/core';
 import handleDragEnd from './dragdrophandler.js';
 import { UploadFile, download } from './datahandler.js';
+import {Sort} from './sort.js';
 
 
 const theme = createTheme({
@@ -36,12 +37,14 @@ function schoolReports(){
 
 function App() {
   const [dummy, setDummy] = useState(null);
+  const [studentList, setStudentList] = useState([]);
+  //<p>{JSON.stringify(studentList)}</p>
   return (
     <ThemeProvider theme={theme}> <br />
       <div className="horiz-box">
-        <UploadFile rerender={() => setDummy(true)}/>
+        <UploadFile rerender={() => setDummy(true)} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={ () => download({TIMES})}>Generate File</Button>
-        <Button variant="contained" component="label" color="primary" onClick={() => console.log("sort button clicked")}>Sort!</Button>
+        <Sort studentList={studentList}/>
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
       </div>
       <br/>
