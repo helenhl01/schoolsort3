@@ -3,7 +3,7 @@ import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
 import {SCHOOLS, TIMES} from './configs.js';
 
-function UploadFile({ rerender, setStudentList }) {
+function UploadFile({ rerender, studentList, setStudentList }) {
   const onChangeHandler = (event) => {
     const selectedFile = event.target.files[0];
     let uploaded = new FormData();

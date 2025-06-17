@@ -1,7 +1,7 @@
 import {SCHOOLS, TIMES} from './configs.js';
 import {useDraggable} from '@dnd-kit/core';
 
-function RenderStudent({student}){
+function RenderStudent({student}){ //after sort is adding twice. need to emliminate duplicates
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
       id: student, //do i need to change id?
       //data: student.schoolName,
@@ -48,18 +48,19 @@ function RenderStudent({student}){
 
   function addStudent(student){ //add student to school's studentList if school assigned
     var sch = SCHOOLS.find(school => school.name === student.schoolName);
-    if(student.schoolName === undefined || sch === undefined){
+    if(student.schoolName === undefined || sch === undefined){ //add student to unsorted
       sch = SCHOOLS.find(school => school.time === "unsorted");
       sch.studentList.push(student);
       sch.students++;
     }
     else{
-      if(!sch.studentList.includes(student)){
+      if(!sch.studentList.includes(student)){ //if student not already in school's list, add tehm
         sch.studentList.push(student);
         sch.students++;
         if(student.carSpace > 0){
           sch.rides += student.carSpace;
         }
+        console.log(student.eid + " added to " + sch.name);
       }
     }
   } 
