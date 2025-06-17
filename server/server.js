@@ -45,6 +45,7 @@ const processArray = (req, res) => { //handles request. send json file and retur
             res.status(400).send("Something went wrong!");
         }
         const jsonDataObject = JSON.parse(req.file.buffer.toString());
+        //console.log(jsonDataObject);
         return res.status(200).send(jsonDataObject);
     })
 }
@@ -55,45 +56,91 @@ app.post('/sort', (req, res) =>{
   //console.log(req.body.SCHOOLS);
   //somehow get lists of school obejcts here. send to server?
   //console.log("sort function called 1");
-  sort(req.body.studentList);
-  return ("yes");
+  let studentList = req.body.studentList;
+  sort(studentList);
+  console.log('starting to return');
+  return res.status(200).send(studentList);
 })
 
 function sort(studentList){ //being callex dprematurely
   //console.log("sort function called");
-  for(const school of SCHOOLS){
-    let i = 0;
-    while((school.rides < school.capacity && (i < studentList.length))){
-      if(schoolRankStudent(school, studentList[i]) >= 2 && !studentList[i].school){ 
-        addStudent(school, studentList[i]);
-      } //fill up schools first, haven't handled taking off students or student preferences yet
-      //should if rirst fill all schools with enough drivers and then later take away or add drivers as needed
-      i++;
-    }
-    i = 0;
-    while((school.students < school.capacity) && (i < studentList.length)){
-      if(schoolRankStudent(school, studentList[i]) >= 1 && !studentList[i].school){ 
-        addStudent(school, studentList[i]);
+  
+  //NOT HANDLING REMOVING STUDNET IF PREF IS HIGHER
+  //loop below for loop while schools are not full or students are not sorted, put the round counter in this outer while loop
+  let round = 1;
+  while(!schoolReports || round < 20){ //arbitrary round stop (set to number of students?)
+    for(const school of SCHOOLS){ //iterating through list of schools
+      //console.log("sorting " + school.name);
+      if(school.name == "Unsorted"){ break; } //if reached the end of the list (unsorted group), end and start over at beginnign 
+      let i = 0; //student list iterator
+      for(i = 0; i < studentList.length; i++){ //should add one student per round
+        if(schoolOffer(school, studentList[i], round)){ 
+          if(studentAccept(school, studentList[i])){ 
+            addStudent(school, studentList[i]);
+            break; //next school
+          }
+        }
       }
-      i++;
-    }
-    schoolReport(school);
+    } 
+    round++;
+  }
+
     //break; //testing just one school
     //console.log("done with first school");
-  }
-  return;
+    //somehow rerender new student lust
+  //}
+  console.log("done sorting")
+  return studentList;
 }
 
-function addStudent(school, student){
+function studentAssigned(student){ //schoolName of student not being updated in the list when they are sorted. no longer adding duplicates to the same school but resulting in people being added to two schools. make both studentlist and school configs a state.
+  if(student.schoolName !== undefined || student.schoolName !== null){
+    //console.log(student.eid + " is already assigned to " + student.schoolName);
+    return true; 
+  }
+  return false;
+}
+
+function schoolOffer(school, student, round){
+  if(round === 1){
+    if (schoolRankStudent(school, student) >=2){ //wouldn't it be the same for all rounds idk, for how many rounds do i need. maybe go thorugh and do all the same, and just find the highest rank each time and hope that all students get an offer? idk this is what i will do for now.
+      return true; //rn rank 2 and 3 are functionally the same
+    }
+  }
+  if(schoolRankStudent(school, student) >=1) {return true;}
+  return false;
+}
+
+function studentAccept(school, student){ //checking availability and ranking
+  if(studentAssigned(student)){
+    if(studentRankSchool(school, student) > studentRankSchool(SCHOOLS.find(obj => obj.name === student.schoolName), student)){
+      return true;
+    }
+    return false;
+  }
+  return true;
+}
+
+function addStudent(school, student){ //redundant. update to combine
   //console.log("called");
-  school.studentList.push(student);
+  school.studentList.push(student); //doesn't seem to actually update the school. update state?
   school.students++;
   if(student.carSpace){
     school.rides += student.carSpace;
     //console.log(school.name + " now has " + school.rides + " rides");
   }
-  student.school = school.name;
+  student.schoolName = school.name;
   //console.log(student.firstName + " " + student.lastName + " added to " + school.name);
+  return;
+}
+
+function removeStudent(school, student){ //untested function
+  if(!school.studenList.includes(student)){
+    console.log(student.eid + " not in " + school.name);
+    return;
+  }
+  school.studentList.splice(school.studentList.indexOf(student), 1);
+  console.log(student.firstName + " " + student.lastName + " has been removed from " + school.name);
   return;
 }
 
@@ -111,7 +158,14 @@ function schoolRankStudent(school, student){
 }
 
 function studentRankSchool(school, student){
-  return student[timeSlotMap[school.time]];
+  return student.timeSlotMap[school.time]; //does not support time pref
+}
+
+function schoolFull(school){
+  if(school.students < school.capacity){
+    return false;
+  }
+  return true;
 }
 
 function schoolReport(school){
@@ -121,4 +175,20 @@ function schoolReport(school){
     console.log(st.eid);
   } */
   return;
+}
+
+function schoolReports(studentList){
+  let done = true;
+  for(var sch of SCHOOLS){ 
+    console.log(sch.name + " has " + sch.students + " students and " + sch.rides + " rides");  
+    if(!schoolFull(sch)){done = false}
+    //console.log(sch.studentList);
+  }
+  for(var st of studentList){
+    if(!studentAssigned(st)){
+      console.log(st.firstName + " " + st.lastName + " is not assigned to a school");
+      done = false;
+    }
+  }
+  return done; //this makes it keep going while not all schools or students returned, find a better way to show finished. maybe have round counter
 }

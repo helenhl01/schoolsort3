@@ -3,19 +3,23 @@ import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
 import {SCHOOLS, TIMES} from './configs.js';
 
-function Sort({studentList}) {
+function Sort({studentList, setStudentList}) {
 
     const data = {
         studentList: studentList,
     };
-    const handleSortClick = async () => {
+    const handleSortClick =  () => {
         //setIsSorted(true); // Update state to indicate sorting is in progress (optional)
-        try {
-          const response = await axios.post("http://localhost:8000/sort", { studentList });
-          console.log("Sort successful:", response.data); // Handle successful response
-        } catch (error) {
-          console.error("Sort error:", error); // Handle errors
-        } 
+        axios.post("http://localhost:8000/sort", { studentList })
+        .then(response => {
+            console.log("bleksjflksjdflksjdflksjd"); 
+            console.log("Sort successful:", response.data); 
+            response.data.map(addStudent);
+            setStudentList(response.data);
+        })
+        .catch(error => {
+            console.error("Sort error:", error); 
+        });
         /*finally {
           setIsSorted(false); // Reset sorting state (optional)
         }*/

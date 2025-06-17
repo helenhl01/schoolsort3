@@ -26,9 +26,9 @@ const theme = createTheme({
 });
 
 function schoolReports(){
-  for(var sch in SCHOOLS){
-    console.log(SCHOOLS[sch].name + " has " + SCHOOLS[sch].students + " students and " + SCHOOLS[sch].rides + " rides");  
-    console.log(SCHOOLS[sch].studentList);
+  for(var sch of SCHOOLS){ //why this instead of sch.students
+    console.log(sch.name + " has " + sch.students + " students and " + sch.rides + " rides");  
+    console.log(sch.studentList);
   }
 }
 
@@ -42,9 +42,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}> <br />
       <div className="horiz-box">
-        <UploadFile rerender={() => setDummy(true)} setStudentList={setStudentList}/>
+        <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={ () => download({TIMES})}>Generate File</Button>
-        <Sort studentList={studentList}/>
+        <Sort studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
       </div>
       <br/>

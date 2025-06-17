@@ -1,4 +1,4 @@
-import {SCHOOLS, TIMES} from './configs.js';
+import {SCHOOLS, TIMES, timeSlotMap} from './configs';
 
 function handleDragEnd(event) {
     const {over, active} = event;
@@ -22,15 +22,8 @@ function dataTransfer({student, dest}){
 }
   
 function validDrop({student, dest}){
-    if(dest.time === "M1"){if (student.monday1 > 0){ return true;}}
-    if(dest.time === "T1"){if (student.tuesday1 > 0){ return true;}}
-    if(dest.time === "W1"){if (student.wednesday1 > 0){ return true;}}
-    if(dest.time === "R1"){if (student.thursday1 > 0){ return true;}}
-    if(dest.time === "M2"){if (student.monday1 > 0){ return true;}}
-    if(dest.time === "T2"){if (student.tuesday2 > 0){ return true;}}
-    if(dest.time === "W2"){if (student.wednesday2 > 0){ return true;}}
-    if(dest.time === "R2"){if (student.thursday2 > 0){ return true;}}
     if(dest.time === "unsorted"){return true;}
+    if(student[timeSlotMap[dest.time]]){return true;};
     return false;
 }
 
