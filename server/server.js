@@ -70,13 +70,15 @@ function sort(studentList){ //being callex dprematurely
   let round = 1;
   while(!schoolReports || round < 20){ //arbitrary round stop (set to number of students?)
     for(const school of SCHOOLS){ //iterating through list of schools
-      //console.log("sorting " + school.name);
+      console.log("sorting " + school.name + " at time " + school.time);
       if(school.name == "Unsorted"){ break; } //if reached the end of the list (unsorted group), end and start over at beginnign 
       let i = 0; //student list iterator
       for(i = 0; i < studentList.length; i++){ //should add one student per round
-        if(schoolOffer(school, studentList[i], round)){ 
+        if(schoolOffer(school, studentList[i], round)){
+          console.log(school.name + " has made an offer to " + studentList[i].eid + " in round " + round); 
           if(studentAccept(school, studentList[i])){ 
             addStudent(school, studentList[i]);
+            console.log(studentList[i].eid + " has ranked " + school.name + " a " + studentRankSchool(school, studentList[i]) + " and been added");
             break; //next school
           }
         }
@@ -94,9 +96,9 @@ function sort(studentList){ //being callex dprematurely
 }
 
 function studentAssigned(student){ //schoolName of student not being updated in the list when they are sorted. no longer adding duplicates to the same school but resulting in people being added to two schools. make both studentlist and school configs a state.
-  if(student.schoolName !== undefined || student.schoolName !== null){
-    //console.log(student.eid + " is already assigned to " + student.schoolName);
-    return true; 
+  if (student.schoolName != null && student.schoolName !== "") {
+    console.log(student.eid + " is already assigned to " + student.schoolName);
+    return true;
   }
   return false;
 }
@@ -113,15 +115,23 @@ function schoolOffer(school, student, round){
 
 function studentAccept(school, student){ //checking availability and ranking
   if(studentAssigned(student)){
-    if(studentRankSchool(school, student) > studentRankSchool(SCHOOLS.find(obj => obj.name === student.schoolName), student)){
+    console.log(student.eid + " already assigned to " + student.schoolName);
+    if(studentRankSchool(school, student) > studentRankSchool(SCHOOLS.find(obj => obj.name === student.schoolName), student)){ //issue is here dummmy
+  
+      console.log(student.eid + " was already assigned to " + SCHOOLS.find(obj => obj.name === student.schoolName).name + " but has accepted " + school.name + "'s offer");
       return true;
     }
+    console.log(student.eid + " has rejected " + school.name + "'s offer");
     return false;
   }
+  console.log(student.eid + " has accepted " + school.name + "'s offer");
   return true;
 }
 
 function addStudent(school, student){ //redundant. update to combine
+  if (!school) {
+    console.error("Attempting to rank an undefined school", student);
+  }
   //console.log("called");
   school.studentList.push(student); //doesn't seem to actually update the school. update state?
   school.students++;
@@ -158,7 +168,16 @@ function schoolRankStudent(school, student){
 }
 
 function studentRankSchool(school, student){
-  return student.timeSlotMap[school.time]; //does not support time pref
+  //console.log("ranking school " + school.name + " at time " + school.time + " for student " + student.eid);
+  //console.log(timeSlotMap[school.time]);
+  //console.log(typeof(timeSlotMap[school.time]));
+  //console.log(typeof(student.timeSlotMap[school.time]));
+  //console.log(student[timeSlotMap[school.time]]);
+  //console.log(student.timeSlotMap[school.time]);
+  if (!school) {
+    console.error("Attempting to rank an undefined school", school);
+  }
+  return student[timeSlotMap[school.time]]; //does not support time pref
 }
 
 function schoolFull(school){
