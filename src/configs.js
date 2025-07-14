@@ -42,7 +42,7 @@ var SCHOOLS = [
         capacity: 10,
         time: "R1",
     },{
-        name: 'Gallindo',
+        name: 'Galindo',
         students: 0, 
         rides: 0,
         studentList: [],
