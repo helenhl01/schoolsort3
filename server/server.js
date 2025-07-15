@@ -61,24 +61,23 @@ app.post('/sort', (req, res) =>{
   console.log('starting to return');
   return res.status(200).send(studentList);
 })
-
-function sort(studentList){ //being callex dprematurely
+//should i init all students to having null if they don't already have a school and a bool as false if their school has been reassiged
+function sort(studentList){ 
   //console.log("sort function called");
   
   //NOT HANDLING REMOVING STUDNET IF PREF IS HIGHER
   //loop below for loop while schools are not full or students are not sorted, put the round counter in this outer while loop
+  //can't handle if number of students available and requested are not the same, will need to hard code so that it is
   let round = 1;
   while(!schoolReports || round < 20){ //arbitrary round stop (set to number of students?)
     for(const school of SCHOOLS){ //iterating through list of schools
       console.log("sorting " + school.name + " at time " + school.time);
-      if(school.name == "Unsorted"){ break; } //if reached the end of the list (unsorted group), end and start over at beginnign 
-      let i = 0; //student list iterator
-      for(i = 0; i < studentList.length; i++){ //should add one student per round
-        if(schoolOffer(school, studentList[i], round)){
-          console.log(school.name + " has made an offer to " + studentList[i].eid + " in round " + round); 
-          if(studentAccept(school, studentList[i])){ 
-            addStudent(school, studentList[i]);
-            console.log(studentList[i].eid + " has ranked " + school.name + " a " + studentRankSchool(school, studentList[i]) + " and been added");
+      if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
+      let st = 0; //student list iterator
+      for(st = 0; st < studentList.length; st++){ // add one student per round
+        if(schoolOffer(school, studentList[st], round)){ //if school has preference for the student 
+          if(studentAccept(school, studentList[st])){ //if student has preference for the school
+            addStudent(school, studentList[st]);
             break; //next school
           }
         }
@@ -86,18 +85,27 @@ function sort(studentList){ //being callex dprematurely
     } 
     round++;
   }
-
-    //break; //testing just one school
-    //console.log("done with first school");
-    //somehow rerender new student lust
-  //}
   console.log("done sorting")
+  checkForDuplicates;
   return studentList;
 }
 
-function studentAssigned(student){ //schoolName of student not being updated in the list when they are sorted. no longer adding duplicates to the same school but resulting in people being added to two schools. make both studentlist and school configs a state.
+function checkForDuplicates(){
+  const studentSchoolMap = {};
+  SCHOOLS.forEach(school => {
+    school.studentList.forEach(student => {
+      if (studentSchoolMap[student.eid]) {
+        console.warn(`Duplicate student ${student.eid} in schools:`, studentSchoolMap[student.eid], "and", school.name);
+      } else {
+        studentSchoolMap[student.eid] = school.name;
+      }
+    });
+  });
+  return;
+}
+
+function studentAssigned(student){ //schoolName of student not being updated in the list when they are sorted. no longer adding duplicates to the same school but resulting in people being added to two schools. make both studentlist and school configs a state. <-- idk if this is still true?
   if (student.schoolName != null && student.schoolName !== "") {
-    console.log(student.eid + " is already assigned to " + student.schoolName);
     return true;
   }
   return false;
@@ -113,40 +121,38 @@ function schoolOffer(school, student, round){
   return false;
 }
 
-function studentAccept(school, student){ //checking availability and ranking
-  if(studentAssigned(student)){
-    console.log(student.eid + " already assigned to " + student.schoolName);
-    if(studentRankSchool(school, student) > studentRankSchool(SCHOOLS.find(obj => obj.name === student.schoolName), student)){ //issue is here dummmy
-  
-      console.log(student.eid + " was already assigned to " + SCHOOLS.find(obj => obj.name === student.schoolName).name + " but has accepted " + school.name + "'s offer");
-      return true;
+function studentAccept(school, student){ //checking availability
+  let curRank = studentRankSchool(school, student);
+  if(curRank > 0){ //if student available
+    if(studentAssigned(student)){ 
+      let prevSchool = SCHOOLS.find(sch => sch.name === student.schoolName);
+      if(curRank > studentRankSchool(prevSchool, student)){
+        removeStudent(prevSchool, student); 
+        return true;
+      }
+      return false; //if new school and old school are ranked the same, student will not be moved
     }
-    console.log(student.eid + " has rejected " + school.name + "'s offer");
-    return false;
+    return true; //if student not already assigned and available, they will accept
   }
-  console.log(student.eid + " has accepted " + school.name + "'s offer");
-  return true;
+  return false; //if not available
 }
 
-function addStudent(school, student){ //redundant. update to combine
+function addStudent(school, student){ 
   if (!school) {
-    console.error("Attempting to rank an undefined school", student);
+    console.error("Attempting to add to an undefined school", student);
   }
-  //console.log("called");
   school.studentList.push(student); //doesn't seem to actually update the school. update state?
   school.students++;
   if(student.carSpace){
     school.rides += student.carSpace;
-    //console.log(school.name + " now has " + school.rides + " rides");
   }
   student.schoolName = school.name;
-  //console.log(student.firstName + " " + student.lastName + " added to " + school.name);
   return;
 }
 
-function removeStudent(school, student){ //untested function
-  if(!school.studenList.includes(student)){
-    console.log(student.eid + " not in " + school.name);
+function removeStudent(school, student){ //rn ranks are the same so no students are being reassigned
+  if(!school.studentList.includes(student)){
+    //console.log(student.eid + " not in " + school.name);
     return;
   }
   school.studentList.splice(school.studentList.indexOf(student), 1);
@@ -168,12 +174,6 @@ function schoolRankStudent(school, student){
 }
 
 function studentRankSchool(school, student){
-  //console.log("ranking school " + school.name + " at time " + school.time + " for student " + student.eid);
-  //console.log(timeSlotMap[school.time]);
-  //console.log(typeof(timeSlotMap[school.time]));
-  //console.log(typeof(student.timeSlotMap[school.time]));
-  //console.log(student[timeSlotMap[school.time]]);
-  //console.log(student.timeSlotMap[school.time]);
   if (!school) {
     console.error("Attempting to rank an undefined school", school);
   }
@@ -187,7 +187,7 @@ function schoolFull(school){
   return true;
 }
 
-function schoolReport(school){
+function schoolReport(school){ //unused, delete?
   console.log(school.name + " at time " + school.time + " has " + school.students + " students and " + school.rides + " rides out of " + school.capacity);
   /*console.log("student list: ");
   for(const st in school.studentList){
@@ -199,7 +199,7 @@ function schoolReport(school){
 function schoolReports(studentList){
   let done = true;
   for(var sch of SCHOOLS){ 
-    console.log(sch.name + " has " + sch.students + " students and " + sch.rides + " rides");  
+    schoolReport(sch);  
     if(!schoolFull(sch)){done = false}
     //console.log(sch.studentList);
   }
@@ -210,4 +210,5 @@ function schoolReports(studentList){
     }
   }
   return done; //this makes it keep going while not all schools or students returned, find a better way to show finished. maybe have round counter
+  //oh this is how i have it returning? that's problematic h
 }

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
-import {SCHOOLS, TIMES} from './configs.js';
 
 function Sort({studentList, setStudentList}) {
 
@@ -12,7 +11,6 @@ function Sort({studentList, setStudentList}) {
         //setIsSorted(true); // Update state to indicate sorting is in progress (optional)
         axios.post("http://localhost:8000/sort", { studentList })
         .then(response => {
-            console.log("bleksjflksjdflksjdflksjd"); 
             console.log("Sort successful:", response.data); 
             response.data.map(addStudent);
             setStudentList(response.data);
