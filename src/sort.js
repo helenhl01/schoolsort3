@@ -12,7 +12,7 @@ function Sort({studentList, setStudentList}) {
         axios.post("http://localhost:8000/sort", { studentList })
         .then(response => {
             console.log("Sort successful:", response.data); 
-            response.data.map(addStudent);
+            //response.data.forEach(addStudent);
             setStudentList(response.data);
         })
         .catch(error => {

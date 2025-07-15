@@ -15,7 +15,7 @@ function UploadFile({ rerender, studentList, setStudentList }) {
        // console.log(typeof studentList);
         //console.log(studentList);
         //console.log(studentList.length);
-        studentList.map(addStudent);
+        //studentList.forEach(addStudent);
         rerender();
         //console.log(typeof studentList);
         setStudentList(studentList);

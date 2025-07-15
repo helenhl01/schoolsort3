@@ -18,7 +18,7 @@ function RenderStudent({student}){ //after sort is adding twice. need to emlimin
 
   return (
     <div >
-    <div id={student.eid} role="button" ref={setNodeRef} style={style} {...listeners} {...attributes} className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
+    <div key={student.eid} id={student.eid} role="button" ref={setNodeRef} style={style} {...listeners} {...attributes} className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
       <p>{student.firstName + " " + student.lastName}</p>
       {tooltip(student)} 
     </div>
@@ -30,7 +30,7 @@ function RenderStudent({student}){ //after sort is adding twice. need to emlimin
     const tooltiptext = [];
     if(student.po){tooltiptext.push(<b>PO</b>, < br />)}
     if(student.exec){tooltiptext.push(<b>Exec</b>, < br />);} //bold
-    if(student.carSpace > 0){tooltiptext.push("Can drive: ", student.carSpace, < br />)} //change this line to just adding pure text instead of span?
+    if(student.carSpace > 0){tooltiptext.push("Can drive: ", student.carSpace, < br />)} 
     tooltiptext.push(<i>Availability:</i>, < br />)
     if(student.monday1){tooltiptext.push("Monday at 2:30", < br />)};
     if(student.monday2){tooltiptext.push("Monday at 3:30", < br />)}; 
@@ -40,6 +40,7 @@ function RenderStudent({student}){ //after sort is adding twice. need to emlimin
     if(student.wednesday2){tooltiptext.push("Wednesday at 3:30", < br />)};
     if(student.thursday1){tooltiptext.push("Thursday at 2:30", < br />)};
     if(student.thursday2){tooltiptext.push("Thursday at 3:30", < br />)};
+
     return (
       <span className="tooltiptext">{tooltiptext}</span> 
     );
