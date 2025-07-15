@@ -27,21 +27,21 @@ function RenderStudent({student}){ //after sort is adding twice. need to emlimin
   }
   
   function tooltip(student){
-    var tooltiptext = "";
-    if(student.po){tooltiptext += 'PO\n';} //bold
-    if(student.exec){tooltiptext += 'Exec\n';} //bold
-    if(student.carSpace > 0){tooltiptext += 'Can drive: ' + student.carSpace + '\n';} //can't figure out newline
-    tooltiptext += 'Availability:\n'; //italics
-    if(student.monday1){ tooltiptext += 'Monday at 2:30\n'}; //can't figure out newline, \n and <br> don't work
-    if(student.monday2){ tooltiptext += 'Monday at 3:30\n'}; 
-    if(student.tuesday1){ tooltiptext += 'Tuesday at 2:30\n'};
-    if(student.tuesday2){ tooltiptext += 'Tuesday at 3:30\n'};
-    if(student.wednesday1){ tooltiptext += 'Wednesday at 2:30\n'};
-    if(student.wednesday2){ tooltiptext += 'Wednesday at 3:30\n'};
-    if(student.thursday1){ tooltiptext += 'Thursday at 2:30\n'};
-    if(student.thursday2){ tooltiptext += 'Thursday at 3:30\n'};
+    const tooltiptext = [];
+    if(student.po){tooltiptext.push(<b>PO</b>, < br />)}
+    if(student.exec){tooltiptext.push(<b>Exec</b>, < br />);} //bold
+    if(student.carSpace > 0){tooltiptext.push("Can drive: ", student.carSpace, < br />)} //change this line to just adding pure text instead of span?
+    tooltiptext.push(<i>Availability:</i>, < br />)
+    if(student.monday1){tooltiptext.push("Monday at 2:30", < br />)};
+    if(student.monday2){tooltiptext.push("Monday at 3:30", < br />)}; 
+    if(student.tuesday1){tooltiptext.push("Tuesday at 2:30", < br />)};
+    if(student.tuesday2){tooltiptext.push("Tuesday at 3:30", < br />)};
+    if(student.wednesday1){tooltiptext.push("Wednesday at 2:30", < br />)};
+    if(student.wednesday2){tooltiptext.push("Wednesday at 3:30", < br />)};
+    if(student.thursday1){tooltiptext.push("Thursday at 2:30", < br />)};
+    if(student.thursday2){tooltiptext.push("Thursday at 3:30", < br />)};
     return (
-      <span className="tooltiptext" dangerouslySetInnerHTML={{ __html: tooltiptext.replace(/\n/g, "<br />") }} /> 
+      <span className="tooltiptext">{tooltiptext}</span> 
     );
   }
 
