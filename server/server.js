@@ -105,10 +105,9 @@ function checkForDuplicates(){
 }
 
 function studentAssigned(student){ //schoolName of student not being updated in the list when they are sorted. no longer adding duplicates to the same school but resulting in people being added to two schools. make both studentlist and school configs a state. <-- idk if this is still true?
-  if (student.schoolName != null && student.schoolName !== "") {
-    return true;
-  }
-  return false;
+  console.log(`Checking ${student.eid}:`, student.schoolName);
+  const name = student.schoolName?.trim().toLowerCase();
+  return name && name !== "unsorted";
 }
 
 function schoolOffer(school, student, round){
@@ -122,11 +121,11 @@ function schoolOffer(school, student, round){
 }
 
 function studentAccept(school, student){ //checking availability
-  let curRank = studentRankSchool(school, student);
-  if(curRank > 0){ //if student available
+  let newRank = studentRankSchool(school, student);
+  if(newRank > 0){ //if student available
     if(studentAssigned(student)){ 
       let prevSchool = SCHOOLS.find(sch => sch.name === student.schoolName);
-      if(curRank > studentRankSchool(prevSchool, student)){
+      if(newRank > studentRankSchool(prevSchool, student)){
         removeStudent(prevSchool, student); 
         return true;
       }

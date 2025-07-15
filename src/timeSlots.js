@@ -19,16 +19,37 @@ function RenderSchool({school, studentList}){
     );
 }
 
-function AllTimeSlots({schools, times, studentList}){  //rerenders every time
+function AllTimeSlots({schools, times, studentList}){  
   const [timesWithSchools, setTimesWithSchools] = useState([]);
 
   useEffect(() => {
-    const populatedTimes = times.map(time => ({
+    console.log("effect hook run");
+    const updatedSchools = schools.map(school => ({
+      ...school,
+      studentList: [],
+    }));
+
+    for (const student of studentList) {
+      const isUnassigned = !student.schoolName || student.schoolName === "Unsorted";
+      const assignedSchool = isUnassigned
+        ? updatedSchools.find(s => s.name === "Unsorted")
+        : updatedSchools.find(s => s.name === student.schoolName);
+      if (assignedSchool) {
+        assignedSchool.studentList.push(student);
+        assignedSchool.students++;
+        if(student.carSpace){
+          assignedSchool.rides += student.carSpace;
+        }
+        student.schoolName = assignedSchool.name;
+      }
+    }
+
+    const populatedTimes = times.map(time => ({ //so that timeSlots are populated with their respective schools, once
       ...time,
       schools: schools.filter(school => school.time === time.id)
     }));
     setTimesWithSchools(populatedTimes);
-  }, [schools, times]);
+  }, [studentList, schools, times]); //change to only dependent on studentList?
 
   return timesWithSchools.map((time, index) => 
       (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")}`} key={time.id}>

@@ -32,13 +32,24 @@ function App() {
   const [studentList, setStudentList] = useState([]);
   const [schools, setSchools] = useState(INITIAL_SCHOOLS);
   const [times, setTimes] = useState(INITIAL_TIMES);
-  //<p>{JSON.stringify(studentList)}</p>
-  console.log("INITIAL_SCHOOLS", INITIAL_SCHOOLS);
-  console.log("INITIAL_TIMES", INITIAL_TIMES);
+
   function schoolReports(){
-    for(var sch of schools){ //why this instead of sch.students
-      console.log(sch.name + " has " + sch.students + " students and " + sch.rides + " rides");  
-      console.log(sch.studentList);
+    const grouped = {};
+
+    for (const student of studentList){
+      const schoolName = student.schoolName || "Unsorted"; //i don't t hink it's actually handling unsorted correctly, later count how many assigned?
+      if(!grouped[schoolName]){
+        grouped[schoolName] = [];
+      }
+      grouped[schoolName].push(student);
+    }
+
+    for(const school of schools){
+      const students = grouped[school.name] || [];
+      const rides = students.reduce((acc, s) => acc + (s.carSpace || 0), 0);
+
+      console.log(`${school.name} has ${students.length} / ${school.capacity} students and ${rides} rides.`);
+      console.log(students);
     }
   }
 
