@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
 
 function Sort({studentList, setStudentList}) {

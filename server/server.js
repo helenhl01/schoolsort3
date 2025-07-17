@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import { SCHOOLS, TIMES, timeSlotMap } from '../src/configs.js';
+import { SCHOOLS, TIMES, timeSlotMap } from '../src/configs.js'; //right now server is receiving hard coded configs and updating them in server, but not returning updated school lists. rest of code is using school state variables and udpating based on studentList state (in timeSlots useEffect). later update server to update state too?
 
 const app = express();
 
@@ -28,7 +28,7 @@ var upload = multer({ //multer middleware to handle file uploads
     if (file.mimetype === 'application/json') {
       cb(null, true);
     } else {
-      cb(new Error('Only JSON files are allowed.')); //send this as an alert to the client
+      cb(new Error('Only JSON files are allowed.')); 
     }
   },}).single('file')
 
@@ -61,21 +61,19 @@ app.post('/sort', (req, res) =>{
   console.log('starting to return');
   return res.status(200).send(studentList);
 })
-//should i init all students to having null if they don't already have a school and a bool as false if their school has been reassiged
+
 function sort(studentList){ 
-  //console.log("sort function called");
-  
-  //NOT HANDLING REMOVING STUDNET IF PREF IS HIGHER
-  //loop below for loop while schools are not full or students are not sorted, put the round counter in this outer while loop
+
+  //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
   //can't handle if number of students available and requested are not the same, will need to hard code so that it is
   let round = 1;
-  while(!schoolReports || round < 20){ //arbitrary round stop (set to number of students?)
+  while(!doneSorting(studentList) ){ //arbitrary round stop (set to number of students?)
     for(const school of SCHOOLS){ //iterating through list of schools
-      console.log("sorting " + school.name + " at time " + school.time);
+      //console.log("sorting " + school.name + " at time " + school.time);
       if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
       let st = 0; //student list iterator
       for(st = 0; st < studentList.length; st++){ // add one student per round
-        if(schoolOffer(school, studentList[st], round)){ //if school has preference for the student 
+        if(schoolOffer(school, studentList[st])){ //if school has preference for the student 
           if(studentAccept(school, studentList[st])){ //if student has preference for the school
             addStudent(school, studentList[st]);
             break; //next school
@@ -86,7 +84,7 @@ function sort(studentList){
     round++;
   }
   console.log("done sorting")
-  checkForDuplicates;
+  //checkForDuplicates;
   return studentList;
 }
 
@@ -104,18 +102,23 @@ function checkForDuplicates(){
   return;
 }
 
-function studentAssigned(student){ //schoolName of student not being updated in the list when they are sorted. no longer adding duplicates to the same school but resulting in people being added to two schools. make both studentlist and school configs a state. <-- idk if this is still true?
-  console.log(`Checking ${student.eid}:`, student.schoolName);
+function studentAssigned(student){
+  //console.log(`Checking ${student.eid}:`, student.schoolName);
   const name = student.schoolName?.trim().toLowerCase();
   return name && name !== "unsorted";
 }
 
-function schoolOffer(school, student, round){
-  if(round === 1){
+function bestStudent(school, studentList){ //but if i do this wont there be sone students who never get fofers
+  const bestStudent = students.reduce((best, current) => {
+    return studentRankSchool(school, current) > studentRankSchool(school, best)
+      ? current
+      : best;
+  });
+}
+function schoolOffer(school, student){
     if (schoolRankStudent(school, student) >=2){ //wouldn't it be the same for all rounds idk, for how many rounds do i need. maybe go thorugh and do all the same, and just find the highest rank each time and hope that all students get an offer? idk this is what i will do for now.
       return true; //rn rank 2 and 3 are functionally the same
     }
-  }
   if(schoolRankStudent(school, student) >=1) {return true;}
   return false;
 }
@@ -126,7 +129,7 @@ function studentAccept(school, student){ //checking availability
     if(studentAssigned(student)){ 
       let prevSchool = SCHOOLS.find(sch => sch.name === student.schoolName);
       if(newRank > studentRankSchool(prevSchool, student)){
-        removeStudent(prevSchool, student); 
+        removeStudent(prevSchool, student); //should i handle removal in the sorting loop?
         return true;
       }
       return false; //if new school and old school are ranked the same, student will not be moved
@@ -140,7 +143,7 @@ function addStudent(school, student){
   if (!school) {
     console.error("Attempting to add to an undefined school", student);
   }
-  school.studentList.push(student); //doesn't seem to actually update the school. update state?
+  school.studentList.push(student); 
   school.students++;
   if(student.carSpace){
     school.rides += student.carSpace;
@@ -150,12 +153,9 @@ function addStudent(school, student){
 }
 
 function removeStudent(school, student){ //rn ranks are the same so no students are being reassigned
-  if(!school.studentList.includes(student)){
-    //console.log(student.eid + " not in " + school.name);
-    return;
-  }
+  if(!school.studentList.includes(student)){return}
   school.studentList.splice(school.studentList.indexOf(student), 1);
-  console.log(student.firstName + " " + student.lastName + " has been removed from " + school.name);
+  //console.log(student.firstName + " " + student.lastName + " has been removed from " + school.name);
   return;
 }
 
@@ -186,8 +186,8 @@ function schoolFull(school){
   return true;
 }
 
-function schoolReport(school){ //unused, delete?
-  console.log(school.name + " at time " + school.time + " has " + school.students + " students and " + school.rides + " rides out of " + school.capacity);
+function schoolReport(school){ //redundant?
+  console.log(`${school.name} ${school.time} has ${school.students} / ${school.capacity} students and ${school.rides} rides.`);
   /*console.log("student list: ");
   for(const st in school.studentList){
     console.log(st.eid);
@@ -195,19 +195,10 @@ function schoolReport(school){ //unused, delete?
   return;
 }
 
-function schoolReports(studentList){
-  let done = true;
-  for(var sch of SCHOOLS){ 
-    schoolReport(sch);  
-    if(!schoolFull(sch)){done = false}
-    //console.log(sch.studentList);
-  }
-  for(var st of studentList){
-    if(!studentAssigned(st)){
-      console.log(st.firstName + " " + st.lastName + " is not assigned to a school");
-      done = false;
-    }
-  }
+function doneSorting(studentList){
+  let done = false;
+  done = !SCHOOLS.some(sch => sch.students < sch.capacity);
+  done = !studentList.some(st => !studentAssigned(st)); //checks if all students are sorted (priority over schools filled?)
   return done; //this makes it keep going while not all schools or students returned, find a better way to show finished. maybe have round counter
   //oh this is how i have it returning? that's problematic h
 }
