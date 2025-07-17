@@ -1,7 +1,7 @@
 import {SCHOOLS, TIMES} from './configs.js';
 import {useDraggable} from '@dnd-kit/core';
 
-function RenderStudent({student}){ //after sort is adding twice. need to emliminate duplicates. all of them are rerendered i think
+function RenderStudent({student}){ 
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
       id: student, //do i need to change id?
       //data: student.schoolName,
@@ -46,11 +46,11 @@ function RenderStudent({student}){ //after sort is adding twice. need to emlimin
     );
   }
 
-  function addStudent(student){ //add student to school's studentList if school assigned, for render
+  /*function addStudent(student){ //add student to school's studentList if school assigned, for render
     var sch = SCHOOLS.find(school => school.name === student.schoolName);
-   /*if(!SCHOOLS.some(school => school.name === student.schoolName)){ //right now, during the first render, it is pulling an error for every student who is unsorted (no data in schoolName field)
+   if(!SCHOOLS.some(school => school.name === student.schoolName)){ //right now, during the first render, it is pulling an error for every student who is unsorted (no data in schoolName field)
       console.log("Student " + student.eid + " is assigned to an invalid school or a school that does not exist");
-    }*/
+    }
     if(!student.schoolName || !sch){ //add student to unsorted
       sch = SCHOOLS.find(school => school.time === "unsorted");
       sch.studentList.push(student);
@@ -66,8 +66,7 @@ function RenderStudent({student}){ //after sort is adding twice. need to emlimin
         console.log(student.eid + " added to " + sch.name);
       }
     }
-  } 
-  //maybe a bool to indicate if student's school has been changed?
+  }  */
   //also add a boo lo say their placement will NOT be changed... maybe increase rank?
 
-export {RenderStudent, addStudent};
+export {RenderStudent};
