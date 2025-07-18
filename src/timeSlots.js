@@ -19,14 +19,16 @@ function RenderSchool({school, studentList}){
     );
 }
 
-function AllTimeSlots({schools, times, studentList}){  
-  const [timesWithSchools, setTimesWithSchools] = useState([]);
+function AllTimeSlots({schools, setSchools, times, setTimes, studentList}){  
+  //const [timesWithSchools, setTimesWithSchools] = useState([]);
 
   useEffect(() => {
-    console.log("effect hook run");
+    //console.log("effect hook run");
     const updatedSchools = schools.map(school => ({
       ...school,
       studentList: [],
+      students : 0, //if a student remains unsorted, they may not be counted?
+      rides : 0, //have to reset
     }));
 
     for (const student of studentList) {
@@ -34,7 +36,7 @@ function AllTimeSlots({schools, times, studentList}){
       const assignedSchool = isUnassigned
         ? updatedSchools.find(s => s.name === "Unsorted")
         : updatedSchools.find(s => s.name === student.schoolName);
-      if (assignedSchool) {
+      if (assignedSchool) { //check if this is true for unsorted students
         assignedSchool.studentList.push(student);
         assignedSchool.students++;
         if(student.carSpace){
@@ -46,12 +48,15 @@ function AllTimeSlots({schools, times, studentList}){
 
     const populatedTimes = times.map(time => ({ //so that timeSlots are populated with their respective schools, once
       ...time,
-      schools: schools.filter(school => school.time === time.id)
+      schools: updatedSchools.filter(school => school.time === time.id)
     }));
-    setTimesWithSchools(populatedTimes);
-  }, [studentList, schools, times]); //change to only dependent on studentList?
+    setTimes(populatedTimes);
+    //console.log(populatedTimes);
+    setSchools(updatedSchools);
+   // console.log(updatedSchools); //students are being added to unsorted's studentlist but they shouldn't be
+  }, [studentList]); //change to only dependent on studentList?
 
-  return timesWithSchools.map((time, index) => 
+  return times.map((time, index) => 
       (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")}`} key={time.id}>
       <h4 >{time.timeName}</h4>
       {time.schools.map((school) => 

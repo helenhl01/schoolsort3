@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { addStudent } from './students.js';
+//import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
-import {SCHOOLS, TIMES} from './configs.js';
+import {TIMES} from './configs.js';
+import { useRef, useEffect } from "react";
 
 function UploadFile({ rerender, studentList, setStudentList }) {
   const onChangeHandler = (event) => {
@@ -44,10 +45,11 @@ function UploadFile({ rerender, studentList, setStudentList }) {
   );
 }
 
-function download(){
+function download(times){
+  //console.log(times);
   const students = [];
   let csv = "";
-  for (const time of TIMES) {
+  for (const time of times) {
     for (const sch of time.schools){
       if(sch.name === "Unsorted"){
         for(const st of sch.studentList){
@@ -55,7 +57,7 @@ function download(){
         continue;
       } //don't export unsorted students to csv 
       csv += sch.name + "\n";
-      for (const st of sch.studentList) {
+      for (const st of sch.studentList) { //it's only doing the original ones,m not the update. has state fully updated?
         students.push(st);
         csv += "," + st.firstName + " " + st.lastName;
         if (st.carSpace) {csv += "," + st.carSpace;}
