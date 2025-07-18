@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import AllTimeSlots from './timeSlots.js';
 import { SCHOOLS as INITIAL_SCHOOLS, TIMES as INITIAL_TIMES } from './configs';
 import Button from '@mui/material/Button';
@@ -33,6 +33,18 @@ function App() {
   const [schools, setSchools] = useState(INITIAL_SCHOOLS);
   const [times, setTimes] = useState(INITIAL_TIMES);
 
+  /* const timesRef = useRef(times);
+
+  useEffect(() => {
+    console.log(times);
+    timesRef.current = times;
+  }, [times]);
+
+  const handleDownload = () => {
+    console.log("Latest times at click:", timesRef.current);
+    download(schools, studentList, timesRef.current);
+  }; */
+  
   function schoolReports(){
     const grouped = {};
 
@@ -57,13 +69,13 @@ function App() {
     <ThemeProvider theme={theme}> <br />
       <div className="horiz-box">
         <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
-        <Button variant="contained" component="label" color="primary" onClick={ () => download({times})}>Generate File</Button>
+        <Button variant="contained" component="label" color="primary" onClick={() => download(times)}>Generate File</Button>
         <Sort studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
       </div>
       <br/>
       <DndContext onDragEnd={handleDragEnd}>
-        <AllTimeSlots schools={schools} times={times} studentList={studentList}/>
+        <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList}/>
       </DndContext>
     </ThemeProvider>
   );
