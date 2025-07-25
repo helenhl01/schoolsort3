@@ -62,7 +62,7 @@ app.post('/sort', (req, res) =>{
   return res.status(200).send(studentList);
 })
 
-function sort(studentList){ 
+function sort(studentList){  //rn no regard to school capacity
 
   //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
   //can't handle if number of students available and requested are not the same, will need to hard code so that it is
@@ -205,14 +205,14 @@ function removeStudent(school, student){ //rn ranks are the same so no students 
 function schoolRankStudent(school, student){ //later add in spanish?
   if(student[timeSlotMap[school.time]]){
     if((school.students > school.rides) && (student.carSpace)){ //school needs rides and student can drive
-      return 3;
+      return 4;
     }
     if((school.capacity > school.rides) && (student.carSpace)){ //school will need rides and student can drive
+      return 3;
+    }
+    if(school.students < school.capacity){ //if school needs students
       return 2;
     }
-    /*if(school.students < school.capacity){ //if school needs students
-      return 2;
-    }*/
     return 1; //student available 
   }
   return 0;
