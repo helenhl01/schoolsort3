@@ -66,22 +66,42 @@ function sort(studentList){
 
   //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
   //can't handle if number of students available and requested are not the same, will need to hard code so that it is
-  let round = 1;
+  //let round = 1;
   while(!doneSorting(studentList) ){ //arbitrary round stop (set to number of students?)
     for(const school of SCHOOLS){ //iterating through list of schools
       //console.log("sorting " + school.name + " at time " + school.time);
       if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
-      let st = 0; //student list iterator
-      for(st = 0; st < studentList.length; st++){ // add one student per round
-        if(schoolOffer(school, studentList[st])){ //if school has preference for the student 
-          if(studentAccept(school, studentList[st])){ //if student has preference for the school
-            addStudent(school, studentList[st]);
+
+      let studentAdded = false;
+      const rejectedOffers = new Set(); //  make set to store students who reject
+      while(!studentAdded){
+        const st = nextBestStudent(school, studentList, rejectedOffers);//  school finds best student
+        //what happens if st is null
+        if(!st){break}
+        console.log(`${school.name} making offer to ${st.eid}`);
+        if(studentAccept(school, st)){//  school makes offer
+          console.log(`${st.eid} has accepted ${school.name}'s offer`);
+          addStudent(school, st);//     if student accepts, add student and move to next school
+          studentAdded = true;
+          break; //do i need both of these stopping conditions m, do i need to break outside of this while loop
+        }
+        console.log(`${st.eid} has rejected ${school.name}'s offer`);
+        rejectedOffers.add(st.eid);//     if student rejects, add student to set, find next best student and loop until student accepts
+      }
+    }   
+
+      // find a way to handle unmatched students at the endc, are they autoamtically added to unsorted in the front end/
+      /*let i = 0; //student list iterator
+      for(i = 0; i < studentList.length; i++){ // add one student per round
+        if(schoolOffer(school, studentList[i])){ //if school has preference for the student 
+          if(studentAccept(school, studentList[i])){ //if student has preference for the school
+            addStudent(school, studentList[i]);
             break; //next school
           }
         }
       }
-    } 
-    round++;
+    } */
+    //round++;
   }
   console.log("done sorting")
   //checkForDuplicates;
@@ -108,12 +128,35 @@ function studentAssigned(student){
   return name && name !== "unsorted";
 }
 
-function bestStudent(school, studentList){ //but if i do this wont there be sone students who never get fofers
-  const bestStudent = students.reduce((best, current) => {
-    return studentRankSchool(school, current) > studentRankSchool(school, best)
+//should i stop making offers once school is full? or should i let algo keep runnign
+function nextBestStudent(school, studentList, rejectedOffers){ //but if i do this wont there be sone students who never get fofers, maybe i should do the  next best until one student accpets at least
+  let best = null;
+  let bestRank = -1;
+
+  for(const cur of studentList){
+    if(rejectedOffers.has(cur.eid)) continue;
+
+    const rank = schoolRankStudent(school, cur);
+    if(best === null || rank > bestRank){
+      best = cur;
+      bestRank = rank;
+    }
+  }
+  return best;
+  /*const remaining = studentList.filter(s => !offersMade.has(s.eid)); //this line needs to change
+  if(remaining.length === 0) return null; //?change
+
+  const best = remaining.reduce((best, current) => {
+    return schoolRankStudent(school, current) > schoolRankStudent(school, best) ? current : best
+  });
+  offersMade.add(best.eid); //cjhange id, only add offers rejected?
+  return best; */
+  
+  /*return studentList.reduce((best, current) => {
+    return schoolRankStudent(school, current) > schoolRankStudent(school, best)
       ? current
       : best;
-  });
+  });*/
 }
 function schoolOffer(school, student){
     if (schoolRankStudent(school, student) >=2){ //wouldn't it be the same for all rounds idk, for how many rounds do i need. maybe go thorugh and do all the same, and just find the highest rank each time and hope that all students get an offer? idk this is what i will do for now.
@@ -159,15 +202,18 @@ function removeStudent(school, student){ //rn ranks are the same so no students 
   return;
 }
 
-function schoolRankStudent(school, student){
+function schoolRankStudent(school, student){ //later add in spanish?
   if(student[timeSlotMap[school.time]]){
-    if((school.students > school.rides) && (student.carSpace)){
+    if((school.students > school.rides) && (student.carSpace)){ //school needs rides and student can drive
       return 3;
     }
-    if((school.capacity > school.rides) && (student.carSpace)){
+    if((school.capacity > school.rides) && (student.carSpace)){ //school will need rides and student can drive
       return 2;
     }
-    return 1;
+    /*if(school.students < school.capacity){ //if school needs students
+      return 2;
+    }*/
+    return 1; //student available 
   }
   return 0;
 }
