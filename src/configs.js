@@ -4,14 +4,14 @@ var SCHOOLS = [
     students: 0, 
     rides: 0,
     studentList: [],
-    capacity: 10,
+    capacity: 30,
     time: "M1",
   },{
     name: 'Rodriguez',
     students: 0, 
     rides: 0,
     studentList: [],
-    capacity: 10,
+    capacity: 20,
     time: "M1",
   },{
     name: 'Hart',

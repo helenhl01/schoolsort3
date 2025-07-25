@@ -57,7 +57,7 @@ function AllTimeSlots({schools, setSchools, times, setTimes, studentList}){
   }, [studentList]); //change to only dependent on studentList?
 
   return times.map((time, index) => 
-      (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")}`} key={time.id}>
+      (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")} ${time.timeName === "Unsorted"?"unsortedSlot" : ""}`} key={time.id}>
       <h4 >{time.timeName}</h4>
       {time.schools.map((school) => 
         (<RenderSchool key={school.name} school={school} studentList={studentList}/>)
