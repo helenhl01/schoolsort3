@@ -46,7 +46,7 @@ function UploadFile({ rerender, studentList, setStudentList }) {
 }
 
 function download(times){
-  //console.log(times);
+  console.log(times);
   const students = [];
   let csv = "";
   for (const time of times) {

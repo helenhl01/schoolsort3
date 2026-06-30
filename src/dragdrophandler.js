@@ -8,17 +8,37 @@ function handleDragEnd(event) {
     dataTransfer({student, dest})
 }
   
-function dataTransfer({student, dest}){ 
-    var src = SCHOOLS.find(school => school.name === student.schoolName)
-    if(src === undefined){src = SCHOOLS.find(school => school.name === "Unsorted");}
-    if(validDrop({student, dest})){
-        src.studentList.splice(src.studentList.indexOf(student), 1);
-        student.schoolName = dest.name=== "Unsorted" ? undefined : dest.name;
-        dest.studentList.push(student);
-    }
-    else{
+function dataTransfer({student, dest, schools, setSchools}){ 
+    //also need to update studentList
+   /* const isUnassigned = !student.schoolName || student.schoolName === "Unsorted";
+      const assignedSchool = isUnassigned
+        ? updatedSchools.find(s => s.name === "Unsorted")
+        : updatedSchools.find(s => s.name === student.schoolName);
+        */
+    const updatedSchools = schools.map((school) => {
+        // Remove student from their current school
+        if (school.name === student.schoolName || (student.schoolName === undefined && school.name === "Unsorted")) {
+          return {
+            ...school,
+            studentList: school.studentList.filter((s) => s.eid !== student.eid),
+          };
+        }
+        // Add student to destination school
+        if (school.name === dest.name) {
+          return {
+            ...school,
+            studentList: [...school.studentList, { ...student, schoolName: dest.name === "Unsorted" ? undefined : dest.name }],
+          };
+        }
+        // Other schools remain unchanged
+        return school;
+      });
+    
+    if (validDrop({ student, dest })) {
+        setSchools(updatedSchools);
+    } else {
         alert(student.eid + " is not available at this time");
-    }   
+    }  
 }
   
 function validDrop({student, dest}){
@@ -27,4 +47,4 @@ function validDrop({student, dest}){
     return false;
 }
 
-export default handleDragEnd;
+export default dataTransfer;
