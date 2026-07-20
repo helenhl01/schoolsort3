@@ -1,4 +1,4 @@
-export var SCHOOLS = [
+var SCHOOLS = [
   {
     name: 'Sunset Valley',
     students: 0, 
@@ -100,7 +100,7 @@ export var SCHOOLS = [
   },
 ];
 
-export var TIMES = [ 
+var TIMES = [
   {id: 'M1', timeName: 'Monday 2:30-4:30', orange: true, 
     schools: []},
   {id: 'T1', timeName: 'Tuesday 2:30-4:30', orange: false, 
@@ -121,7 +121,7 @@ export var TIMES = [
   schools: []},
 ];
 
-export const timeSlotMap = {
+const timeSlotMap = {
   "M1": "monday1",
   "M2": "monday2",
   "T1": "tuesday1",
@@ -133,4 +133,5 @@ export const timeSlotMap = {
   "F1": "friday1",
   "F2": "friday2"
 };
-//export {SCHOOLS, TIMES, timeSlotMap};
+
+module.exports = { SCHOOLS, TIMES, timeSlotMap };
