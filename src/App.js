@@ -72,7 +72,7 @@ function App() {
     <ThemeProvider theme={theme}> <br />
       <div className="horiz-box">
         <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
-        <Button variant="contained" component="label" color="primary" onClick={ () => download({times})}>Generate File</Button>
+        <Button variant="contained" component="label" color="primary" onClick={ () => download(times)}>Generate File</Button>
         <Sort studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
       </div>
