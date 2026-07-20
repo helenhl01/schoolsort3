@@ -51,24 +51,38 @@ const processArray = (req, res) => { //handles request. send json file and retur
 }
 
 app.post('/sort', (req, res) =>{
-  //console.log(req.body.studentList[0]);
-  //console.log(SCHOOLS);
-  //console.log(req.body.SCHOOLS);
-  //somehow get lists of school obejcts here. send to server?
-  //console.log("sort function called 1");
   let studentList = req.body.studentList;
-  sort(studentList);
+  const schools = buildSchools(studentList); // fresh working copy per request, never mutate the shared SCHOOLS config
+  sort(studentList, schools);
   console.log('starting to return');
   return res.status(200).send(studentList);
 })
 
-function sort(studentList){  //rn no regard to school capacity
+function buildSchools(studentList){ // reconstruct school rosters/counts from studentList.schoolName, using SCHOOLS only for static config (name/time/capacity)
+  const schools = SCHOOLS.map(school => ({
+    ...school,
+    studentList: [],
+    students: 0,
+    rides: 0,
+  }));
+  for(const student of studentList){
+    const school = schools.find(s => s.name === student.schoolName) || schools.find(s => s.name === "Unsorted");
+    if(school){
+      school.studentList.push(student);
+      school.students++;
+      if(student.carSpace){ school.rides += student.carSpace; }
+    }
+  }
+  return schools;
+}
+
+function sort(studentList, schools){  //rn no regard to school capacity
 
   //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
   //can't handle if number of students available and requested are not the same, will need to hard code so that it is
   //let round = 1;
-  while(!doneSorting(studentList) ){ //arbitrary round stop (set to number of students?)
-    for(const school of SCHOOLS){ //iterating through list of schools
+  while(!doneSorting(studentList, schools) ){ //arbitrary round stop (set to number of students?)
+    for(const school of schools){ //iterating through list of schools
       //console.log("sorting " + school.name + " at time " + school.time);
       if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
 
@@ -79,7 +93,7 @@ function sort(studentList){  //rn no regard to school capacity
         //what happens if st is null
         if(!st){break}
         console.log(`${school.name} making offer to ${st.eid}`);
-        if(studentAccept(school, st)){//  school makes offer
+        if(studentAccept(school, st, schools)){//  school makes offer
           console.log(`${st.eid} has accepted ${school.name}'s offer`);
           addStudent(school, st);//     if student accepts, add student and move to next school
           studentAdded = true;
@@ -166,11 +180,11 @@ function schoolOffer(school, student){
   return false;
 }
 
-function studentAccept(school, student){ //checking availability
+function studentAccept(school, student, schools){ //checking availability
   let newRank = studentRankSchool(school, student);
   if(newRank > 0){ //if student available
-    if(studentAssigned(student)){ 
-      let prevSchool = SCHOOLS.find(sch => sch.name === student.schoolName);
+    if(studentAssigned(student)){
+      let prevSchool = schools.find(sch => sch.name === student.schoolName);
       if(newRank > studentRankSchool(prevSchool, student)){
         removeStudent(prevSchool, student); //should i handle removal in the sorting loop?
         return true;
@@ -241,9 +255,9 @@ function schoolReport(school){ //redundant?
   return;
 }
 
-function doneSorting(studentList){
+function doneSorting(studentList, schools){
   let done = false;
-  done = !SCHOOLS.some(sch => sch.students < sch.capacity);
+  done = !schools.some(sch => sch.students < sch.capacity);
   done = !studentList.some(st => !studentAssigned(st)); //checks if all students are sorted (priority over schools filled?)
   return done; //this makes it keep going while not all schools or students returned, find a better way to show finished. maybe have round counter
   //oh this is how i have it returning? that's problematic h

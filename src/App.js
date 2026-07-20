@@ -53,23 +53,20 @@ function App() {
     }
   }
 
-  function createHandleDragEnd(schools, setSchools, studentList) {
-    //console.log("dragging ");
+  function createHandleDragEnd({ schools, studentList, setStudentList }) {
     return function handleDragEnd(event) {
       const { over, active } = event;
       if (!over || !active) return;
-  
-      console.log(schools);
-      
+
       const dest = schools.find(s => s.name === over.id);
       const student = studentList.find(s => s.eid === active.id);
-  
+
       if (!dest || !student) return;
       console.log("dragging " + student.eid + " from " + student.schoolName + " to " + dest.name);
-      dataTransfer({ student, dest, schools, setSchools });
+      dataTransfer({ student, dest, studentList, setStudentList });
     };
   }
-  const handleDragEnd = createHandleDragEnd({ schools, setSchools, studentList });
+  const handleDragEnd = createHandleDragEnd({ schools, studentList, setStudentList });
 
   return (
     <ThemeProvider theme={theme}> <br />
