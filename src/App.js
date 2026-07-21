@@ -61,10 +61,9 @@ function App() {
 
       const dest = schools.find(s => s.name === over.id.name);
       const student = studentList.find(s => s.eid === active.id.eid);
-      console.log(dest);
-      console.log(student);
-      if (!dest || !student) return;
       
+      if (!dest || !student) return;
+      //console.log("dragging " + student.eid + " from " + student.schoolName + " to " + dest.name);
       dataTransfer({ student, dest, studentList, setStudentList });
     };
   }
