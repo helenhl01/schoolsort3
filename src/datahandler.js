@@ -45,34 +45,56 @@ function UploadFile({ rerender, studentList, setStudentList }) {
   );
 }
 
+const CSV_HEADERS = ["Time", "School", "First Name", "Last Name", "Car Space", "Role", "EID", "Email", "Phone"];
+
+// Wraps a field in quotes (doubling any internal quotes) whenever it contains
+// a comma, quote, or newline, per RFC 4180 - so names/emails with odd characters can't corrupt the row structure.
+function csvEscape(value) {
+  const str = value === null || value === undefined ? "" : String(value);
+  if (/[",\r\n]/.test(str)) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+function toCsvRow(fields) {
+  return fields.map(csvEscape).join(",");
+}
+
+function studentRole(student) {
+  if (student.po) return "PO";
+  if (student.exec) return "Exec";
+  return "";
+}
+
 function download(times){
   console.log(times);
   const students = [];
-  let csv = "";
+  const csvRows = [toCsvRow(CSV_HEADERS)];
   for (const time of times) {
     for (const sch of time.schools){
       if(sch.name === "Unsorted"){
         for(const st of sch.studentList){
           students.push(st);}
         continue;
-      } //don't export unsorted students to csv 
-      csv += sch.name + "\n";
-      for (const st of sch.studentList) { //it's only doing the original ones,m not the update. has state fully updated?
+      } //don't export unsorted students to csv
+      for (const st of sch.studentList) {
         students.push(st);
-        csv += "," + st.firstName + " " + st.lastName;
-        if (st.carSpace) {csv += "," + st.carSpace;}
-        else {csv += ",";}
-        if (st.po && st.po === true) {
-          csv += ",PO";
-        } else if (st.exec && st.exec === true) {
-          csv += ",Exec";
-        } else {
-          csv += ",";
-        }
-        csv += "," + st.eid + "," + st.email +"," + st.phone + "\n";
+        csvRows.push(toCsvRow([
+          time.timeName,
+          sch.name,
+          st.firstName,
+          st.lastName,
+          st.carSpace || "",
+          studentRole(st),
+          st.eid,
+          st.email,
+          st.phone,
+        ]));
       }
     }
   }
+  const csv = csvRows.join("\r\n");
 //export unsorted students to json but not csv
   const fileData = JSON.stringify(students);
   const blob = new Blob([fileData], { type: "text/plain" });
