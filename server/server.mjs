@@ -92,16 +92,16 @@ function sort(studentList, schools){  //rn no regard to school capacity
         const st = nextBestStudent(school, studentList, rejectedOffers);//  school finds best student
         //what happens if st is null
         if(!st){break}
-        console.log(`${school.name} making offer to ${st.eid}`);
+        //console.log(`${school.name} making offer to ${st.eid}`);
         if(studentAccept(school, st, schools)){//  school makes offer
-          console.log(`${st.eid} has accepted ${school.name}'s offer`);
+          //console.log(`${st.eid} has accepted ${school.name}'s offer`);
           addStudent(school, st);//     if student accepts, add student and move to next school
           studentAdded = true;
           break; //do i need both of these stopping conditions m, do i need to break outside of this while loop
         }
-        console.log(`${st.eid} has rejected ${school.name}'s offer`);
+        //console.log(`${st.eid} has rejected ${school.name}'s offer`);
         rejectedOffers.add(st.eid);//     if student rejects, add student to set, find next best student and loop until student accepts
-      }
+      } //do i end up handling the rejected offers?
     }   
 
       // find a way to handle unmatched students at the endc, are they autoamtically added to unsorted in the front end/

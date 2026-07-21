@@ -56,13 +56,15 @@ function App() {
   function createHandleDragEnd({ schools, studentList, setStudentList }) {
     return function handleDragEnd(event) {
       const { over, active } = event;
+      console.log(event);
       if (!over || !active) return;
 
-      const dest = schools.find(s => s.name === over.id);
-      const student = studentList.find(s => s.eid === active.id);
-
+      const dest = schools.find(s => s.name === over.id.name);
+      const student = studentList.find(s => s.eid === active.id.eid);
+      console.log(dest);
+      console.log(student);
       if (!dest || !student) return;
-      console.log("dragging " + student.eid + " from " + student.schoolName + " to " + dest.name);
+      
       dataTransfer({ student, dest, studentList, setStudentList });
     };
   }
