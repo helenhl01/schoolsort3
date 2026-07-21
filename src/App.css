@@ -8,8 +8,13 @@
   margin: 10px;
 }
 
+.time-slots-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start; /* don't stretch every box to match the tallest one in its row */
+}
+
 .timeSlot {
-  float: left;
   width: 23%;
   padding: 5px;
   margin: 5px;
@@ -19,11 +24,10 @@
 }
 
 .unsortedSlot {
-  margin-top: 100px;
-  flex-basis: 100%;       /* Forces it to full width (new line) */
-  margin-top: 60px;       /* Adds vertical spacing */
-  align-self: flex-start; /* Aligns to left instead of stretching */
-
+  flex-basis: 100%;       /* forces it onto its own new row */
+  width: 100%;            /* spans the full row instead of just 23% */
+  margin-top: 60px;       /* adds vertical spacing from the rows above */
+  align-self: flex-start; /* aligns to left instead of stretching */
 }
 
 .orangeTimeSlot{
@@ -48,6 +52,20 @@
   padding-left: 5px;
   margin-bottom: 15x;
   text-align: left;
+}
+
+.unsortedSlot .school {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px 10px;
+}
+
+.unsortedSlot .school > .schoolNameText {
+  grid-column: 1 / -1; /* hidden name row still exists in layout; keep it from eating one of the 4 student columns */
+}
+
+.unsortedSlot .school .student.po {
+  border: 2px solid #FAD7A0; /* PO fill color matches the default border, so give it the exec-orange outline here for contrast against Unsorted's white background */
 }
 
 .student{

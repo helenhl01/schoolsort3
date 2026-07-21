@@ -3,7 +3,7 @@ import {useDraggable} from '@dnd-kit/core';
 
 function RenderStudent({student}){ 
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
-      id: student, //do i need to change id?
+      id: student.eid, //do i need to change id?
       //data: student.schoolName,
     });
   let style = (transform ? {

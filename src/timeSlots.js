@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 
 function RenderSchool({school, studentList}){
   const {isOver, setNodeRef} = useDroppable({ 
-    id: school, 
+    id: school.name, 
   }); 
   const style = { 
     color: isOver ? 'orange' : undefined,
@@ -56,14 +56,18 @@ function AllTimeSlots({schools, setSchools, times, setTimes, studentList}){
    // console.log(updatedSchools); //students are being added to unsorted's studentlist but they shouldn't be
   }, [studentList]); //change to only dependent on studentList?
 
-  return times.map((time, index) => 
-      (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")} ${time.timeName === "Unsorted"?"unsortedSlot" : ""}`} key={time.id}>
-      <h4 >{time.timeName}</h4>
-      {time.schools.map((school) => 
-        (<RenderSchool key={school.name} school={school} studentList={studentList}/>)
+  return (
+    <div className="time-slots-container">
+      {times.map((time, index) =>
+        (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")} ${time.timeName === "Unsorted"?"unsortedSlot" : ""}`} key={time.id}>
+        <h4 >{time.timeName}</h4>
+        {time.schools.map((school) =>
+          (<RenderSchool key={school.name} school={school} studentList={studentList}/>)
+        )}
+        </div>)
       )}
-      </div>)
-);
+    </div>
+  );
 
 }
 
