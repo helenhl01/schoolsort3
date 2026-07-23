@@ -105,6 +105,12 @@ function StudentModal({student, onClose}){
             {student.trainingComplete ? "Yes" : "No"}
           </span>
         </p>
+
+        <p className="modal-section-header">Additional:</p>
+        <p><span className="modal-field-label">T-Shirt Size:</span> {student.tshirtSize}</p>
+        {student.availabilityNotes &&
+          <p><span className="modal-field-label">Availability Notes:</span> "{student.availabilityNotes}"</p>
+        }
       </div>
     </div>
   );

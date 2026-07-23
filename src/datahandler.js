@@ -153,6 +153,8 @@ function parseFormResponses(text){
     gradDate: parseGradDate(row),
     major: (findValueOf(row, "major") || "").trim(),
     semsInSEEK: parseSemsInSEEK(row),
+    tshirtSize: (findValueOf(row, "t-shirt size") || "").trim(),
+    availabilityNotes: (findValueOf(row, "additional comments about your availability") || "").trim(),
     carSpace: parseCarSpace(row),
     trainingComplete: (parseTrainingComplete(row)),
     submittedAt: parseTimestamp(row),
