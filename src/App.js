@@ -7,7 +7,7 @@ import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
 import {DndContext} from '@dnd-kit/core';
 import dataTransfer from './dragdrophandler.js';
-import { UploadFile, download } from './datahandler.js';
+import { UploadFile, UploadResponses, download } from './datahandler.js';
 import {Sort} from './sort.js';
 
 const theme = createTheme({
@@ -73,6 +73,7 @@ function App() {
     <ThemeProvider theme={theme}> <br />
       <div className="horiz-box">
         <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
+        <UploadResponses rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={ () => download(times)}>Generate File</Button>
         <Sort studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>

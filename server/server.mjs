@@ -28,7 +28,7 @@ var upload = multer({ //multer middleware to handle file uploads
     if (file.mimetype === 'application/json') {
       cb(null, true);
     } else {
-      cb(new Error('Only JSON files are allowed.')); 
+      cb(new Error('Only JSON files are allowed.')); //change this to a conditional depending on which button pushed, then send json object without reconverting to file
     }
   },}).single('file')
 
@@ -122,7 +122,7 @@ function sort(studentList, schools){  //rn no regard to school capacity
   return studentList;
 }
 
-function checkForDuplicates(){
+function checkForDuplicates(){ 
   const studentSchoolMap = {};
   SCHOOLS.forEach(school => {
     school.studentList.forEach(student => {
