@@ -150,11 +150,14 @@ function parseFormResponses(text){
     email: (findValueOf(row, "email") || "").trim(),
     phone: (findValueOf(row, "phone") || "").trim(),
     eid: (findValueOf(row, "eid") || "").trim(),
+    gradDate: parseGradDate(row),
+    major: (findValueOf(row, "major") || "").trim(),
+    semsInSEEK: parseSemsInSEEK(row),
     carSpace: parseCarSpace(row),
     trainingComplete: (parseTrainingComplete(row)),
     submittedAt: parseTimestamp(row),
-    po: false,
-    exec: false,
+    po: parseBooleanFlag(findValueOf(row, "po")),
+    exec: parseBooleanFlag(findValueOf(row, "exec")),
     monday1: (parseAvailability(row, "monday1")), monday2: (parseAvailability(row, "monday2")),
     tuesday1: (parseAvailability(row, "tuesday1")), tuesday2: (parseAvailability(row, "tuesday2")),
     wednesday1: (parseAvailability(row, "wednesday1")), wednesday2: (parseAvailability(row, "wednesday2")),
@@ -192,6 +195,26 @@ function findValueOf(row, substrings){ //find the column matching header name of
     console.warn(`No column found matching "${substrings}" - check if the form's question wording changed.`);
   }
   return key ? row[key] : undefined;
+}
+
+function parseGradDate(row){
+  const semester = (findValueOf(row, "graduation semester") || "").trim();
+  const year = (findValueOf(row, "graduation year") || "").trim();
+  return [semester, year].filter(Boolean).join(" ");
+}
+
+function parseSemsInSEEK(row){
+  const beenBefore = (findValueOf(row, "been in seek before") || "").trim().toLowerCase();
+  if(beenBefore !== "yes"){
+    return 0;
+  }
+  const parsed = parseInt(findValueOf(row, "how many semesters") || "", 10);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
+function parseBooleanFlag(value){
+  const normalized = (value || "").toString().trim().toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
 }
 
 function parseCarSpace(row){

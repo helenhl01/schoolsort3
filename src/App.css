@@ -171,14 +171,77 @@
   background-color: #FAD7A0;
 }
 
+.modal-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 30px 4px 0;
+}
+
 .modal-name {
-  margin: 0 30px 15px 0;
+  margin: 0;
   font-size: 22px;
+}
+
+.modal-grad-date {
+  font-size: 13px;
+  font-style: italic;
 }
 
 .modal-box p {
   margin: 4px 0;
   font-size: 13px;
+}
+
+.modal-box p.modal-role-badge {
+  margin: 0 0 2px 0;
+  font-weight: bold;
+}
+
+.modal-box p.modal-major {
+  margin: 0 0 4px 0;
+  font-style: italic;
+}
+
+.modal-box p.modal-sems-in-seek {
+  margin: 0 0 15px 0;
+}
+
+.modal-box p.modal-section-header {
+  margin: 15px 0 4px 0;
+  font-weight: bold;
+}
+
+.modal-field-label {
+  font-style: italic;
+}
+
+.modal-no-school {
+  font-style: italic;
+}
+
+.modal-value-yes {
+  color: #2e7d32;
+}
+
+.modal-value-no {
+  color: #c62828;
+}
+
+.modal-copy-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
+  cursor: pointer;
+  color: #999;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.modal-copy-btn:hover {
+  color: #000;
 }
 
 @media (prefers-reduced-motion: no-preference) {
