@@ -23,6 +23,12 @@
   border: 2px solid #FEF5E7;
 }
 
+.timeSlot h4 {
+  position: relative;
+  left: 10px;
+  top: -5px;
+}
+
 .unsortedSlot {
   flex-basis: 100%;       /* forces it onto its own new row */
   width: 100%;            /* spans the full row instead of just 23% */
@@ -69,14 +75,22 @@
 }
 
 .student{
-  font-size: 11px;      
-  border-radius: 15px;  
+  font-size: 11px;
+  border-radius: 15px;
   border: 2px solid #FEF5E7;
   padding: 0% 3%;
   position: relative;
   display: inline-block;
   margin-top: 3px;
   margin-bottom: 3px;
+}
+
+.studentName{
+  cursor: pointer;
+}
+
+.studentName:hover{
+  color: orange;
 }
 
 .tooltip .tooltiptext {
@@ -107,6 +121,64 @@
   border-width: 5px;
   border-style: solid;
   border-color: transparent #FAD7A0 transparent transparent;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  position: relative;
+  background-color: #FEF5E7;
+  border: 2px solid #FAD7A0;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 640px;
+  max-height: 80vh;
+  overflow-y: auto;
+  font-family: verdana;
+  text-align: left;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #FAD7A0;
+  background-color: white;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background-color: #FAD7A0;
+}
+
+.modal-name {
+  margin: 0 30px 15px 0;
+  font-size: 22px;
+}
+
+.modal-box p {
+  margin: 4px 0;
+  font-size: 13px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

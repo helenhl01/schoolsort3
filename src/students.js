@@ -1,7 +1,7 @@
 import {SCHOOLS, TIMES} from './configs.js';
 import {useDraggable} from '@dnd-kit/core';
 
-function RenderStudent({student}){ 
+function RenderStudent({student, onSelectStudent}){
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
       id: student.eid, //do i need to change id?
       //data: student.schoolName,
@@ -19,7 +19,7 @@ function RenderStudent({student}){
   return (
     <div >
     <div key={student.eid} id={student.eid} role="button" ref={setNodeRef} style={style} {...listeners} {...attributes} className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
-      <p>{student.firstName + " " + student.lastName}</p>
+      <p className="studentName" onClick={() => onSelectStudent(student)}>{student.firstName + " " + student.lastName}</p>
       {tooltip(student)} 
     </div>
     </div>

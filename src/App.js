@@ -5,10 +5,11 @@ import { SCHOOLS as INITIAL_SCHOOLS, TIMES as INITIAL_TIMES } from './configs';
 import Button from '@mui/material/Button';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
-import {DndContext} from '@dnd-kit/core';
+import {DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import dataTransfer from './dragdrophandler.js';
 import { UploadFile, UploadResponses, download } from './datahandler.js';
 import {Sort} from './sort.js';
+import StudentModal from './StudentModal.js';
 
 const theme = createTheme({
   palette: {
@@ -32,6 +33,13 @@ function App() {
   const [studentList, setStudentList] = useState([]);
   const [schools, setSchools] = useState(INITIAL_SCHOOLS);
   const [times, setTimes] = useState(INITIAL_TIMES);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
+  // require a small pointer move before dnd-kit starts a drag, so a plain click on a student (no movement) still fires a click event to open the modal
+  const sensors = useSensors(
+    useSensor(PointerSensor, {activationConstraint: {distance: 5}}),
+    useSensor(KeyboardSensor)
+  );
 
   function schoolReports(){
     const grouped = {};
@@ -79,9 +87,10 @@ function App() {
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
       </div>
       <br/>
-      <DndContext onDragEnd={handleDragEnd}>
-        <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList}/>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent}/>
       </DndContext>
+      <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)}/>
     </ThemeProvider>
   );
 }

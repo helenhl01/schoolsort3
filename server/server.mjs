@@ -18,10 +18,6 @@ app.listen(8000, () => {
   console.log("app listening on port 8000")
 })
 
-/* app.get('/upload', (req, res) => { //endpoint
-    res.json({ message: "this is the upload page" });
-});
- */
 
 var upload = multer({ //multer middleware to handle file uploads
     fileFilter: (req, file, cb) => {
@@ -45,7 +41,6 @@ const processArray = (req, res) => { //handles request. send json file and retur
             res.status(400).send("Something went wrong!");
         }
         const jsonDataObject = JSON.parse(req.file.buffer.toString());
-        //console.log(jsonDataObject);
         return res.status(200).send(jsonDataObject);
     })
 }
@@ -77,24 +72,19 @@ function buildSchools(studentList){ // reconstruct school rosters/counts from st
 }
 
 function sort(studentList, schools){  //rn no regard to school capacity
-
   //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
   //can't handle if number of students available and requested are not the same, will need to hard code so that it is
   //let round = 1;
   while(!doneSorting(studentList, schools) ){ //arbitrary round stop (set to number of students?)
     for(const school of schools){ //iterating through list of schools
-      //console.log("sorting " + school.name + " at time " + school.time);
       if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
-
       let studentAdded = false;
       const rejectedOffers = new Set(); //  make set to store students who reject
       while(!studentAdded){
         const st = nextBestStudent(school, studentList, rejectedOffers);//  school finds best student
         //what happens if st is null
         if(!st){break}
-        //console.log(`${school.name} making offer to ${st.eid}`);
         if(studentAccept(school, st, schools)){//  school makes offer
-          //console.log(`${st.eid} has accepted ${school.name}'s offer`);
           addStudent(school, st);//     if student accepts, add student and move to next school
           studentAdded = true;
           break; //do i need both of these stopping conditions m, do i need to break outside of this while loop
@@ -118,7 +108,7 @@ function sort(studentList, schools){  //rn no regard to school capacity
     //round++;
   }
   console.log("done sorting")
-  //checkForDuplicates;
+  checkForDuplicates;
   return studentList;
 }
 
@@ -137,7 +127,6 @@ function checkForDuplicates(){
 }
 
 function studentAssigned(student){
-  //console.log(`Checking ${student.eid}:`, student.schoolName);
   const name = student.schoolName?.trim().toLowerCase();
   return name && name !== "unsorted";
 }

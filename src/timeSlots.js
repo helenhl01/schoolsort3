@@ -4,22 +4,22 @@ import React, { useEffect, useState } from "react";
 
 
 
-function RenderSchool({school, studentList}){
-  const {isOver, setNodeRef} = useDroppable({ 
-    id: school.name, 
-  }); 
-  const style = { 
+function RenderSchool({school, studentList, onSelectStudent}){
+  const {isOver, setNodeRef} = useDroppable({
+    id: school.name,
+  });
+  const style = {
     color: isOver ? 'orange' : undefined,
   };
     return (
         <div className={`school  ${school.time == 'unsorted' ? "hidden" : ""}`} ref={setNodeRef} style={style} key={school.name} id={school.name}>
             <p className="schoolNameText" >{school.name}</p>
-            {studentList.filter(s => s.schoolName === school.name).map(student => <RenderStudent key={student.eid} student={student} />)}
+            {studentList.filter(s => s.schoolName === school.name).map(student => <RenderStudent key={student.eid} student={student} onSelectStudent={onSelectStudent} />)}
         </ div>
     );
 }
 
-function AllTimeSlots({schools, setSchools, times, setTimes, studentList}){  
+function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSelectStudent}){
   //const [timesWithSchools, setTimesWithSchools] = useState([]);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function AllTimeSlots({schools, setSchools, times, setTimes, studentList}){
         (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")} ${time.timeName === "Unsorted"?"unsortedSlot" : ""}`} key={time.id}>
         <h4 >{time.timeName}</h4>
         {time.schools.map((school) =>
-          (<RenderSchool key={school.name} school={school} studentList={studentList}/>)
+          (<RenderSchool key={school.name} school={school} studentList={studentList} onSelectStudent={onSelectStudent}/>)
         )}
         </div>)
       )}
