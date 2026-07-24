@@ -77,6 +77,11 @@ function App() {
   }
   const handleDragEnd = createHandleDragEnd({ schools, studentList, setStudentList });
 
+  function updateStudent(updated){
+    setStudentList(prev => prev.map(s => s === selectedStudent ? updated : s));
+    setSelectedStudent(updated);
+  }
+
   return (
     <ThemeProvider theme={theme}> <br />
       <div className="horiz-box">
@@ -90,7 +95,7 @@ function App() {
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent}/>
       </DndContext>
-      <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)}/>
+      <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)} onSave={updateStudent}/>
     </ThemeProvider>
   );
 }

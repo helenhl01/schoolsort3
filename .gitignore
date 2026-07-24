@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# real applicant PII - use test-responses.csv (sanitized) instead
+Copy of Spring 2025 SEEK Mentor Application (Responses) - Form Responses 1.csv
