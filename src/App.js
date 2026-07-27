@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AllTimeSlots from './timeSlots.js';
 import { SCHOOLS as INITIAL_SCHOOLS, TIMES as INITIAL_TIMES } from './configs';
 import Button from '@mui/material/Button';
@@ -10,6 +10,17 @@ import dataTransfer from './dragdrophandler.js';
 import { UploadFile, UploadResponses, download } from './datahandler.js';
 import {Sort} from './sort.js';
 import StudentModal from './StudentModal.js';
+
+const STORAGE_KEY = "schoolsort-studentList";
+
+function loadStudentList(){
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
 
 const theme = createTheme({
   palette: {
@@ -30,7 +41,7 @@ const theme = createTheme({
 
 function App() {
   const [dummy, setDummy] = useState(null);
-  const [studentList, setStudentList] = useState([]);
+  const [studentList, setStudentList] = useState(loadStudentList);
   const [schools, setSchools] = useState(INITIAL_SCHOOLS);
   const [times, setTimes] = useState(INITIAL_TIMES);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -76,6 +87,10 @@ function App() {
     };
   }
   const handleDragEnd = createHandleDragEnd({ schools, studentList, setStudentList });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(studentList));
+  }, [studentList]);
 
   function updateStudent(updated){
     setStudentList(prev => prev.map(s => s === selectedStudent ? updated : s));
