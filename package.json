@@ -27,6 +27,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/server.mjs",
+    "predev": "kill-port 3000 8000",
     "dev": "concurrently -n react,server -c blue,green \"npm start\" \"npm run server\""
   },
   "eslintConfig": {
@@ -48,6 +49,7 @@
     ]
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "kill-port": "^2.0.1"
   }
 }

@@ -52,7 +52,7 @@ function App() {
     useSensor(KeyboardSensor)
   );
 
-  function schoolReports(){
+  function schoolReports(){ //simplify this function
     const grouped = {};
 
     for (const student of studentList){
@@ -92,6 +92,13 @@ function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(studentList));
   }, [studentList]);
 
+  function clearStorage(){
+    if(window.confirm("Clear all saved data? This cannot be undone.")){
+      localStorage.removeItem(STORAGE_KEY);
+      setStudentList([]);
+    }
+  }
+
   function updateStudent(updated){
     setStudentList(prev => prev.map(s => s === selectedStudent ? updated : s));
     setSelectedStudent(updated);
@@ -105,6 +112,7 @@ function App() {
         <Button variant="contained" component="label" color="primary" onClick={ () => download(times)}>Generate File</Button>
         <Sort studentList={studentList} setStudentList={setStudentList}/>
         <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
+        <Button variant="contained" component="label" color="error" onClick={clearStorage}>Clear Saved Data</Button>
       </div>
       <br/>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
