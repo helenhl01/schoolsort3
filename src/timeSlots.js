@@ -4,6 +4,40 @@ import React, { useEffect, useState } from "react";
 
 
 
+function schoolTooltip(school){
+  const overCapacity = Math.max(0, school.students - school.capacity);
+  const missingRides = Math.max(0, school.students - school.rides);
+  const tooltiptext = [];
+  if(school.students === 0){
+    tooltiptext.push(`${school.name} has a capacity of ${school.capacity} students.`);
+  } else {
+    tooltiptext.push(`${school.name} has ${school.students}/${school.capacity} students and ${school.rides} rides.`, < br />);
+    if(overCapacity > 0){ tooltiptext.push(<i>{overCapacity} student{overCapacity === 1 ? '' : 's'} over capacity.</i>, < br />); }
+    if(missingRides > 0){ tooltiptext.push(<b><i>Needs {missingRides} more ride{missingRides === 1 ? '' : 's'}.</i></b>, < br />); }
+  }
+
+  return (
+    <span className="tooltiptext">{tooltiptext}</span>
+  );
+}
+
+function SchoolInfoIcon({school}){
+  const overCapacity = Math.max(0, school.students - school.capacity);
+  const missingRides = Math.max(0, school.students - school.rides);
+  const color = missingRides > 0 ? '#d32f2f' : overCapacity > 0 ? '#ed6c02' : '#666';
+
+  return (
+    <span className="schoolInfoIcon tooltip">
+      <svg viewBox="0 0 24 24" width="11" height="11">
+        <circle cx="12" cy="12" r="10" fill="none" stroke={color} strokeWidth="2" />
+        <rect x="11" y="10" width="2" height="7" fill={color} />
+        <rect x="11" y="6.5" width="2" height="2" fill={color} />
+      </svg>
+      {schoolTooltip(school)}
+    </span>
+  );
+}
+
 function RenderSchool({school, studentList, onSelectStudent}){
   const {isOver, setNodeRef} = useDroppable({
     id: school.name,
@@ -13,7 +47,7 @@ function RenderSchool({school, studentList, onSelectStudent}){
   };
     return (
         <div className={`school  ${school.time == 'unsorted' ? "hidden" : ""}`} ref={setNodeRef} style={style} key={school.name} id={school.name}>
-            <p className="schoolNameText" >{school.name}</p>
+            <p className="schoolNameText" >{school.name}<SchoolInfoIcon school={school} /></p>
             {studentList.filter(s => s.schoolName === school.name).map(student => <RenderStudent key={student.eid} student={student} onSelectStudent={onSelectStudent} />)}
         </ div>
     );

@@ -93,6 +93,14 @@
   color: orange;
 }
 
+.schoolInfoIcon {
+  font-size: 11px;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
 .tooltip .tooltiptext {
   visibility: hidden;
   width: 120px;
@@ -112,6 +120,13 @@
   visibility: visible;
   opacity: 1;
 }
+.schoolInfoIcon .tooltiptext { /* the icon anchor is much narrower than a student card, so the default 105%-of-anchor-width offset leaves the arrow overlapping the icon; push it right and lift the box a few px for clearance */
+  left: 18px;
+  top: -8px;
+  width: 140px; /* left edge stays anchored via left: 18px above, so the extra width only extends the box rightward */
+  padding: 5px 6px;
+}
+
 .tooltip .tooltiptext::after { /* arrow */
   content: " ";
   position: absolute;
@@ -121,6 +136,10 @@
   border-width: 5px;
   border-style: solid;
   border-color: transparent #FAD7A0 transparent transparent;
+}
+
+.schoolInfoIcon .tooltiptext::after { /* fixed px instead of %, so it always lands on the icon's vertical center regardless of how many issue lines the box holds */
+  top: 13.5px;
 }
 
 .modal-overlay {
