@@ -74,24 +74,26 @@ function buildSchools(studentList){ // reconstruct school rosters/counts from st
 function sort(studentList, schools){  //rn no regard to school capacity
   //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
   //can't handle if number of students available and requested are not the same, will need to hard code so that it is
-  //let round = 1;
-  while(!doneSorting(studentList, schools) ){ //arbitrary round stop (set to number of students?)
-    for(const school of schools){ //iterating through list of schools
+  while(!doneSorting(studentList, schools) ){ 
+    for(const school of schools.filter(s => s.name !== "Unsorted").sort((a, b) => schoolFull(a) - schoolFull(b))){
       if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
       let studentAdded = false;
       const rejectedOffers = new Set(); //  make set to store students who reject
       while(!studentAdded){
         const st = nextBestStudent(school, studentList, rejectedOffers);//  school finds best student
-        //what happens if st is null
         if(!st){break}
         if(studentAccept(school, st, schools)){//  school makes offer
+          if(studentAssigned(st)){ //if student is already assigned but this offer is better
+            removeStudent(schools.find(sch => sch.name === st.schoolName), st);  //remove from prev school
+            console.log(st.eid + " is being removed from " + st.schoolName);
+          }
           addStudent(school, st);//     if student accepts, add student and move to next school
           studentAdded = true;
-          break; //do i need both of these stopping conditions m, do i need to break outside of this while loop
+          //break; //do i need both of these stopping conditions m, do i need to break outside of this while loop
         }
         //console.log(`${st.eid} has rejected ${school.name}'s offer`);
         rejectedOffers.add(st.eid);//     if student rejects, add student to set, find next best student and loop until student accepts
-      } //do i end up handling the rejected offers?
+      } 
     }   
 
       // find a way to handle unmatched students at the endc, are they autoamtically added to unsorted in the front end/
@@ -170,19 +172,18 @@ function schoolOffer(school, student){
 }
 
 function studentAccept(school, student, schools){ //checking availability
-  let newRank = studentRankSchool(school, student);
-  if(newRank > 0){ //if student available
-    if(studentAssigned(student)){
-      let prevSchool = schools.find(sch => sch.name === student.schoolName);
-      if(newRank > studentRankSchool(prevSchool, student)){
-        removeStudent(prevSchool, student); //should i handle removal in the sorting loop?
-        return true;
-      }
-      return false; //if new school and old school are ranked the same, student will not be moved
+  let newRank = studentRankSchool(school, student); //0 or 1, depending on availability
+  if (newRank === 0) return false;
+  if(studentAssigned(student)){
+    let prevSchool = schools.find(sch => sch.name === student.schoolName);
+    //console.log(schoolRankStudent(school, student) + " " + schoolRankStudent(prevSchool, student));
+    if(schoolRankStudent(school, student) > schoolRankStudent(prevSchool, student)){
+      console.log(school.name + " has ranked " + student.firstName + " higher than " + prevSchool.name);
+      return true;
     }
-    return true; //if student not already assigned and available, they will accept
+    return false; //if new school and old school are ranked the same, student will not be moved
   }
-  return false; //if not available
+  return true; //if student not already assigned and available, they will accept
 }
 
 function addStudent(school, student){ 
@@ -212,7 +213,7 @@ function schoolRankStudent(school, student){ //later add in spanish?
     }
     if((school.capacity > school.rides) && (student.carSpace)){ //school will need rides and student can drive
       return 3;
-    }
+    } 
     if(school.students < school.capacity){ //if school needs students
       return 2;
     }
@@ -235,19 +236,9 @@ function schoolFull(school){
   return true;
 }
 
-function schoolReport(school){ //redundant?
-  console.log(`${school.name} ${school.time} has ${school.students} / ${school.capacity} students and ${school.rides} rides.`);
-  /*console.log("student list: ");
-  for(const st in school.studentList){
-    console.log(st.eid);
-  } */
-  return;
-}
-
 function doneSorting(studentList, schools){
   let done = false;
-  done = !schools.some(sch => sch.students < sch.capacity);
-  done = !studentList.some(st => !studentAssigned(st)); //checks if all students are sorted (priority over schools filled?)
+  done = !schools.some(sch => sch.students < sch.capacity) || !studentList.some(st => !studentAssigned(st));
   return done; //this makes it keep going while not all schools or students returned, find a better way to show finished. maybe have round counter
   //oh this is how i have it returning? that's problematic h
 }

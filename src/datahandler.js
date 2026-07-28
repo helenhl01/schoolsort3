@@ -15,24 +15,17 @@ function UploadFile({ rerender, studentList, setStudentList }) {
     axios.post("http://localhost:8000/upload", uploaded)
       .then(response => {
         let studentList = response.data; //make global and accessible for when sort is called. 
-       // console.log(typeof studentList);
-        //console.log(studentList);
-        //console.log(studentList.length);
-        //studentList.forEach(addStudent);
         rerender();
-        //console.log(typeof studentList);
         setStudentList(studentList);
         return studentList;
       })
       /*.then(studentList => {
-        //console.log(studentList);
         const data = {
           studentList: studentList,
         };
         return axios.post("http://localhost:8000/sort", data); // Use studentList in the second then block
       })
       .then(response => {
-        console.log(response);
         //rerender(); // Call rerender here if needed after both requests finish
       });*/
     };
@@ -70,7 +63,6 @@ function studentRole(student) {
 }
 
 function download(times){
-  console.log(times);
   const students = [];
   const csvRows = [toCsvRow(CSV_HEADERS)];
   for (const time of times) {
