@@ -12,7 +12,7 @@ function schoolTooltip(school){
     tooltiptext.push(`${school.name} has a capacity of ${school.capacity} students.`);
   } else {
     tooltiptext.push(`${school.name} has ${school.students}/${school.capacity} students and ${school.rides} rides.`, < br />);
-    if(overCapacity > 0){ tooltiptext.push(<i>{overCapacity} student{overCapacity === 1 ? '' : 's'} over capacity.</i>, < br />); }
+    if(overCapacity > 0){ tooltiptext.push(< br /> , <i>{overCapacity} student{overCapacity === 1 ? '' : 's'} over capacity.</i>, < br />); }
     if(missingRides > 0){ tooltiptext.push(<b><i>Needs {missingRides} more ride{missingRides === 1 ? '' : 's'}.</i></b>, < br />); }
   }
 
