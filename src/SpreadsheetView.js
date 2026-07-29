@@ -153,6 +153,7 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [timeSortMenuOpen, setTimeSortMenuOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const menuRef = useRef(null);
   const timeSortMenuRef = useRef(null);
 
@@ -243,6 +244,36 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
     });
   }
 
+  // Toggles one student's row-select checkbox. Selection is independent of filtering, so
+  // selecting a student, then filtering them out of view, keeps them selected underneath.
+  function toggleSelected(eid) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(eid) ? next.delete(eid) : next.add(eid);
+      return next;
+    });
+  }
+
+  // The header checkbox only ever acts on the currently visible (filtered) rows - "select
+  // all" while a filter is active shouldn't reach out and select students you can't see.
+  function toggleSelectAllVisible() {
+    const allVisibleSelected = filteredList.every(s => selectedIds.has(s.eid));
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      filteredList.forEach(s => allVisibleSelected ? next.delete(s.eid) : next.add(s.eid));
+      return next;
+    });
+  }
+
+  // Copies the selected students' emails to the clipboard as a comma-separated list, ready
+  // to paste into a "To:" field. Students with no email on file are skipped.
+  function handleCopyEmails() {
+    const emails = orderedList
+      .filter(s => selectedIds.has(s.eid) && s.email)
+      .map(s => s.email);
+    navigator.clipboard.writeText(emails.join(", "));
+  }
+
   return (
     <div className="spreadsheet-view">
       <div className="spreadsheet-toolbar" ref={menuRef}>
@@ -295,10 +326,28 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
             ))
           )}
         </div>
+
+        <button
+          type="button"
+          className="copy-emails-btn"
+          disabled={selectedIds.size === 0}
+          onClick={handleCopyEmails}
+        >
+          Copy emails{selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}
+        </button>
       </div>
 
       <div className="spreadsheet-table-wrap">
-        <div className="spreadsheet-grid spreadsheet-header-row" style={{ gridTemplateColumns: columnWidths }}>
+        <div className="spreadsheet-grid spreadsheet-header-row" style={{ gridTemplateColumns: `28px ${columnWidths}` }}>
+          <div className="spreadsheet-select-cell">
+            <input
+              type="checkbox"
+              aria-label="Select all shown"
+              checked={filteredList.length > 0 && filteredList.every(s => selectedIds.has(s.eid))}
+              ref={el => { if (el) el.indeterminate = filteredList.some(s => selectedIds.has(s.eid)) && !filteredList.every(s => selectedIds.has(s.eid)); }}
+              onChange={toggleSelectAllVisible}
+            />
+          </div>
           {COLUMNS.map(column => (
             <div
               key={column.key}
@@ -326,11 +375,19 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
           <div
             key={student.eid}
             className={`spreadsheet-grid spreadsheet-row ${index % 2 ? "spreadsheet-row-alt" : ""}`}
-            style={{ gridTemplateColumns: columnWidths }}
+            style={{ gridTemplateColumns: `28px ${columnWidths}` }}
             role="button"
             tabIndex={0}
             onClick={() => onSelectStudent(student)}
           >
+            <div className="spreadsheet-select-cell" onClick={e => e.stopPropagation()}>
+              <input
+                type="checkbox"
+                aria-label={`Select ${student.firstName} ${student.lastName}`}
+                checked={selectedIds.has(student.eid)}
+                onChange={() => toggleSelected(student.eid)}
+              />
+            </div>
             {COLUMNS.map(column => (
               <div key={column.key}>{cellText(column.key, student, schoolTimeOf, times)}</div>
             ))}

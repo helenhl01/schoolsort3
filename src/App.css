@@ -582,6 +582,35 @@
   background-color: #FEF5E7;
 }
 
+.spreadsheet-select-cell {
+  display: flex;
+  align-items: center;
+  cursor: default;
+}
+
+.spreadsheet-select-cell input[type="checkbox"] {
+  accent-color: #FAD7A0;
+  color: #420404;
+}
+
+.copy-emails-btn {
+  margin-left: auto;
+  background-color: #FAD7A0;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: verdana;
+  cursor: pointer;
+}
+
+.copy-emails-btn:disabled {
+  background-color: #E5E7E9;
+  color: #888;
+  cursor: default;
+}
+
 .spreadsheet-row:hover {
   /* inset instead of outline: outline draws outside the row's box, which the
      table-wrap's overflow-x:auto was clipping off at the left/right edges */
