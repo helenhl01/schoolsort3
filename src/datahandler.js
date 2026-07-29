@@ -152,10 +152,10 @@ function parseFormResponses(text){
     submittedAt: parseTimestamp(row),
     po: parseBooleanFlag(findValueOf(row, "po")),
     exec: parseBooleanFlag(findValueOf(row, "exec")),
-    monday1: (parseAvailability(row, "monday1")), monday2: (parseAvailability(row, "monday2")),
-    tuesday1: (parseAvailability(row, "tuesday1")), tuesday2: (parseAvailability(row, "tuesday2")),
-    wednesday1: (parseAvailability(row, "wednesday1")), wednesday2: (parseAvailability(row, "wednesday2")),
-    thursday1: (parseAvailability(row, "thursday1")), thursday2: (parseAvailability(row, "thursday2")),
+    M1: (parseAvailability(row, "monday1")), M2: (parseAvailability(row, "monday2")),
+    T1: (parseAvailability(row, "tuesday1")), T2: (parseAvailability(row, "tuesday2")),
+    W1: (parseAvailability(row, "wednesday1")), W2: (parseAvailability(row, "wednesday2")),
+    R1: (parseAvailability(row, "thursday1")), R2: (parseAvailability(row, "thursday2")),
 //later add a field to save extra inputs, including car maybes
   })
 )
@@ -241,4 +241,4 @@ function parseAvailability(row, day){
   }
 }
 
-export { UploadFile, UploadResponses, download };
+export { UploadFile, UploadResponses, download, studentRole };

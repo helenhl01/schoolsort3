@@ -352,6 +352,248 @@
   color: #000;
 }
 
+.view-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin: 0 10px;
+}
+
+.view-tab {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-family: verdana;
+  border-radius: 10px 10px 0 0;
+  border: 2px solid transparent;
+  background-color: #FAD7A0;
+  color: #000;
+  cursor: pointer;
+}
+
+.view-tab.active {
+  background-color: #FFFFFF;
+  border: 2px solid #FAD7A0;
+  border-bottom: none;
+  font-weight: bold;
+  margin-bottom: -2px; /* pulls the tab over the panel's top border so the seam disappears where they meet */
+  position: relative;
+  z-index: 2;
+}
+
+.view-panel {
+  background-color: #FFFFFF;
+  border: 2px solid #FAD7A0;
+  border-radius: 0 12px 12px 12px;
+  padding: 16px;
+  margin: 0 10px;
+}
+
+.spreadsheet-toolbar {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.filter-menu-btn {
+  background-color: #FAD7A0;
+  border: 2px solid #FAD7A0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: verdana;
+  cursor: pointer;
+  color: #000;
+}
+
+.filter-caret {
+  font-size: 15px;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  background-color: #FFFFFF;
+  border: 2px solid #FAD7A0;
+  border-radius: 8px;
+  width: 170px;
+  padding: 4px;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-category-row {
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.filter-category-row:hover {
+  background-color: #FEF5E7;
+}
+
+.filter-flyout {
+  position: absolute;
+  top: -2px;
+  left: 174px;
+  background-color: #FFFFFF;
+  border: 2px solid #FAD7A0;
+  border-radius: 8px;
+  width: 190px;
+  padding: 8px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 21;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+
+.filter-select-all {
+  border-top: 1px solid #FEF5E7;
+  margin-top: 4px;
+  padding-top: 6px;
+  font-style: italic;
+}
+
+.filter-bubbles {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.filter-bubble {
+  background-color: #FAD7A0;
+  color: #000;
+  font-size: 13px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-bubble-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0px 4px 0px 0px;
+  color: #000;
+}
+
+.spreadsheet-table-wrap {
+  overflow-x: auto;
+}
+
+.spreadsheet-grid {
+  display: grid;
+  /* grid-template-columns is set inline per-render (SpreadsheetView's columnWidths),
+     sized in `ch` to fit each column's widest value instead of a fixed guess here. `ch`
+     resolves against this element's own font-size AND font-family (different fonts have
+     different glyph widths), so both must be set here directly, not just on child cells -
+     otherwise the header row and data rows would each resolve `ch` differently and their
+     columns would drift out of alignment. */
+  font-size: 12.5px;
+  font-family: verdana;
+  column-gap: 4px;
+  width: fit-content;
+}
+
+.spreadsheet-header-row {
+  padding: 0 14px;
+}
+
+.spreadsheet-header-cell {
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: verdana;
+}
+
+.sort-triangle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  color: #666;
+  padding: 0;
+  line-height: 1;
+}
+
+.time-sort-menu {
+  position: absolute;
+  top: 24px;
+  left: 4px;
+  background-color: #FFFFFF;
+  border: 2px solid #FAD7A0;
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 21;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.time-sort-option {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: verdana;
+  color: #000;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.time-sort-option:hover {
+  background-color: #FEF5E7;
+}
+
+.spreadsheet-row {
+  background-color: #FFFFFF;
+  border-radius: 14px;
+  padding: 8px 14px;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  font-family: verdana;
+  cursor: pointer;
+}
+
+.spreadsheet-row-alt {
+  background-color: #FEF5E7;
+}
+
+.spreadsheet-row:hover {
+  /* inset instead of outline: outline draws outside the row's box, which the
+     table-wrap's overflow-x:auto was clipping off at the left/right edges */
+  box-shadow: inset 0 0 0 2px #FAD7A0;
+}
+
+.spreadsheet-row-count {
+  font-size: 11px;
+  color: #999;
+  margin: 10px 2px 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

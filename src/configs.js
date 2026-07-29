@@ -121,17 +121,13 @@ var TIMES = [
   schools: []},
 ];
 
-const timeSlotMap = {
-  "M1": "monday1",
-  "M2": "monday2",
-  "T1": "tuesday1",
-  "T2": "tuesday2",
-  "W1": "wednesday1",
-  "W2": "wednesday2",
-  "R1": "thursday1",
-  "R2": "thursday2",
-  "F1": "friday1",
-  "F2": "friday2"
-};
 
-module.exports = { SCHOOLS, TIMES, timeSlotMap };
+
+const AVAILABILITY_FIELDS = [
+  ["M1", "Monday at 2:30"], ["M2", "Monday at 3:30"],
+  ["T1", "Tuesday at 2:30"], ["T2", "Tuesday at 3:30"],
+  ["W1", "Wednesday at 2:30"], ["W2", "Wednesday at 3:30"],
+  ["R1", "Thursday at 2:30"], ["R2", "Thursday at 3:30"],
+];
+
+module.exports = { SCHOOLS, TIMES, AVAILABILITY_FIELDS };

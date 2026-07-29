@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AVAILABILITY_FIELDS } from './configs.js';
 
 function CopyIcon(){
   return (
@@ -72,13 +73,6 @@ function EditableCheckbox({label, checked, field, onChange}){
     </label>
   );
 }
-
-const AVAILABILITY_FIELDS = [
-  ["monday1", "Monday 2:30"], ["monday2", "Monday 3:30"],
-  ["tuesday1", "Tuesday 2:30"], ["tuesday2", "Tuesday 3:30"],
-  ["wednesday1", "Wednesday 2:30"], ["wednesday2", "Wednesday 3:30"],
-  ["thursday1", "Thursday 2:30"], ["thursday2", "Thursday 3:30"],
-];
 
 function formatSemsInSEEK(semsInSEEK){
   return semsInSEEK > 0 ? `${semsInSEEK} semester${semsInSEEK === 1 ? "" : "s"} in SEEK` : "First semester in SEEK";

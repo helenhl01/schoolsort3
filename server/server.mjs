@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import { SCHOOLS, TIMES, timeSlotMap } from '../src/configs.js'; //right now server is receiving hard coded configs and updating them in server, but not returning updated school lists. rest of code is using school state variables and udpating based on studentList state (in timeSlots useEffect). later update server to update state too?
+import { SCHOOLS, TIMES } from '../src/configs.js'; //right now server is receiving hard coded configs and updating them in server, but not returning updated school lists. rest of code is using school state variables and udpating based on studentList state (in timeSlots useEffect). later update server to update state too?
 
 const app = express();
 
@@ -207,7 +207,7 @@ function removeStudent(school, student){ //rn ranks are the same so no students 
 }
 
 function schoolRankStudent(school, student){ //later add in spanish?
-  if(student[timeSlotMap[school.time]]){
+  if(student[school.time]){
     if((school.students > school.rides) && (student.carSpace)){ //school needs rides and student can drive
       return 4;
     }
@@ -226,7 +226,7 @@ function studentRankSchool(school, student){
   if (!school) {
     console.error("Attempting to rank an undefined school", school);
   }
-  return student[timeSlotMap[school.time]]; //does not support time pref
+  return student[school.time]; //does not support time pref
 }
 
 function schoolFull(school){

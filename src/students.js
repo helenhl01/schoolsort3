@@ -1,4 +1,4 @@
-import {SCHOOLS, TIMES} from './configs.js';
+import {SCHOOLS, TIMES, AVAILABILITY_FIELDS} from './configs.js';
 import {useDraggable} from '@dnd-kit/core';
 
 function RenderStudent({student, onSelectStudent}){
@@ -32,14 +32,9 @@ function RenderStudent({student, onSelectStudent}){
     if(student.exec){tooltiptext.push(<b>Exec</b>, < br />);} //bold
     if(student.carSpace > 0){tooltiptext.push("Can drive: ", student.carSpace, < br />)} 
     tooltiptext.push(<i>Availability:</i>, < br />)
-    if(student.monday1){tooltiptext.push("Monday at 2:30", < br />)};
-    if(student.monday2){tooltiptext.push("Monday at 3:30", < br />)}; 
-    if(student.tuesday1){tooltiptext.push("Tuesday at 2:30", < br />)};
-    if(student.tuesday2){tooltiptext.push("Tuesday at 3:30", < br />)};
-    if(student.wednesday1){tooltiptext.push("Wednesday at 2:30", < br />)};
-    if(student.wednesday2){tooltiptext.push("Wednesday at 3:30", < br />)};
-    if(student.thursday1){tooltiptext.push("Thursday at 2:30", < br />)};
-    if(student.thursday2){tooltiptext.push("Thursday at 3:30", < br />)};
+    for (const [key, label] of AVAILABILITY_FIELDS) {
+      if (student[key]) { tooltiptext.push(label, < br />); }
+    }
 
     return (
       <span className="tooltiptext">{tooltiptext}</span> 

@@ -10,6 +10,7 @@ import dataTransfer from './dragdrophandler.js';
 import { UploadFile, UploadResponses, download } from './datahandler.js';
 import {Sort} from './sort.js';
 import StudentModal from './StudentModal.js';
+import SpreadsheetView from './SpreadsheetView.js';
 
 const STORAGE_KEY = "schoolsort-studentList";
 
@@ -29,6 +30,11 @@ const theme = createTheme({
       contrastText: '#000',
       //darker: '#FAD7A0',
     },
+    error: {
+      main: '#faa0a0',
+      contrastText: '#000',
+      //darker: '#FAD7A0',
+    },
     /*neutral: { 
       main: '#64748B',
       contrastText: '#fff',
@@ -45,6 +51,7 @@ function App() {
   const [schools, setSchools] = useState(INITIAL_SCHOOLS);
   const [times, setTimes] = useState(INITIAL_TIMES);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [view, setView] = useState('schedule');
 
   // require a small pointer move before dnd-kit starts a drag, so a plain click on a student (no movement) still fires a click event to open the modal
   const sensors = useSensors(
@@ -106,18 +113,28 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}> <br />
-      <div className="horiz-box">
-        <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
-        <UploadResponses rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
-        <Button variant="contained" component="label" color="primary" onClick={ () => download(times)}>Generate File</Button>
-        <Sort studentList={studentList} setStudentList={setStudentList}/>
-        <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
-        <Button variant="contained" component="label" color="error" onClick={clearStorage}>Clear Saved Data</Button>
+      <div className="view-tabs">
+        <button className={`view-tab ${view === 'schedule' ? 'active' : ''}`} onClick={() => setView('schedule')}>Schedule</button>
+        <button className={`view-tab ${view === 'spreadsheet' ? 'active' : ''}`} onClick={() => setView('spreadsheet')}>Spreadsheet</button>
       </div>
-      <br/>
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent}/>
-      </DndContext>
+      <div className="view-panel">
+        {view === 'schedule' ?
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <div className="horiz-box">
+              <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
+              <UploadResponses rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
+              <Button variant="contained" component="label" color="primary" onClick={ () => download(times)}>Generate File</Button>
+              <Sort studentList={studentList} setStudentList={setStudentList}/>
+              <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
+              <Button variant="contained" component="label" color="error" onClick={clearStorage}>Clear Saved Data</Button>
+            </div>
+            <br/>
+            <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent}/>
+          </DndContext>
+          :
+          <SpreadsheetView studentList={studentList} schools={schools} times={times} onSelectStudent={setSelectedStudent}/>
+        }
+      </div>
       <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)} onSave={updateStudent}/>
     </ThemeProvider>
   );
