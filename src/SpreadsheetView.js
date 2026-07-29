@@ -27,8 +27,9 @@ function buildFilterCategories(schools, times) {
   return [
     { key: "time", label: "Time", options: times.map(t => ({ value: t.id, label: t.timeName })) },
     { key: "school", label: "School", options: schools.map(s => ({ value: s.name, label: s.name })) },
-    { key: "po", label: "PO", options: [{ value: true, label: "PO" }] },
-    { key: "exec", label: "Exec", options: [{ value: true, label: "Exec" }] },
+    { key: "po", label: "PO", options: [
+        { value: "PO", label: "PO" },
+        { value: "Exec", label: "Exec" }]},
     { key: "trainingStatus", label: "Training status", options: [
         { value: "Complete", label: "Complete" },
         { value: "Incomplete", label: "Incomplete" },
@@ -129,8 +130,7 @@ function matchesFilters(student, activeFilters, schoolTimeOf) {
     let studentValue;
     if (category === "time") studentValue = schoolTimeOf(student.schoolName);
     else if (category === "school") studentValue = student.schoolName || "Unsorted";
-    else if (category === "po") studentValue = !!student.po;
-    else if (category === "exec") studentValue = !!student.exec;
+    else if (category === "po") studentValue = studentRole(student);
     else if (category === "trainingStatus") studentValue = student.trainingComplete ? "Complete" : "Incomplete";
     if (!values.has(studentValue)) return false;
   }
