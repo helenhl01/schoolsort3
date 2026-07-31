@@ -60,17 +60,22 @@ function App() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [view, setView] = useState('schedule');
 
-  // Snapshot each student's assignment exactly once, on first render - this is the
-  // "since last refresh" baseline. A ref (not state) because it must never itself trigger
-  // a re-render or be recomputed later; the lazy-init-in-render pattern (checking .current
-  // and setting it inline) guarantees it's captured before the first paint, unlike a
-  // useEffect version which would run one render too late.
-  const initialAssignmentsRef = useRef(null);
-  if (initialAssignmentsRef.current === null) {
-    initialAssignmentsRef.current = new Map(studentList.map(s => [s.eid, normalizeSchoolName(s.schoolName)]));
+  // Each student's baseline is captured the first time their eid is ever seen in
+  // studentList this session - not just once at mount. That covers both the students
+  // loaded from localStorage at page load AND students who first appear later via a
+  // mid-session upload (their baseline is however they arrived in that file, not "unset").
+  // A ref (not state) because recording a baseline must never itself trigger a re-render;
+  // running this directly in the render body (not an effect) guarantees any newly-arrived
+  // students get their baseline locked in during the very same render that introduces them,
+  // before AllTimeSlots's populate effect gets a chance to touch their schoolName.
+  const initialAssignmentsRef = useRef(new Map());
+  for (const s of studentList) {
+    if (!initialAssignmentsRef.current.has(s.eid)) {
+      initialAssignmentsRef.current.set(s.eid, normalizeSchoolName(s.schoolName));
+    }
   }
 
-  // Students whose current schoolName no longer matches that baseline - covers drag-and-drop,
+  // Students whose current schoolName no longer matches their baseline - covers drag-and-drop,
   // the modal edit, and the Sort button alike, since all three ultimately just change studentList.
   // Both sides go through normalizeSchoolName so "never assigned" and "assigned to Unsorted" read
   // as the same thing - AllTimeSlots's populate effect silently rewrites an unassigned student's
@@ -146,6 +151,18 @@ function App() {
     setStudentList(prev => prev.filter(s => s !== toDelete));
   }
 
+  // A fresh upload is a new "how they started" source of truth, not an edit - it should wipe
+  // the changed-session baseline and start over, rather than let per-eid entries from a PRIOR
+  // upload linger and get compared against a completely different file's data (e.g. uploading
+  // a CSV of survey responses, which never carries assignments, over a JSON roster that did
+  // have real assignments - every student would otherwise look like they'd been unassigned).
+  // Only wired up to the two upload components below; Sort/drag-and-drop/the modal still use
+  // the plain setStudentList, since those genuinely should count as changes within a session.
+  function handleUpload(newStudentList){
+    initialAssignmentsRef.current = new Map(newStudentList.map(s => [s.eid, normalizeSchoolName(s.schoolName)]));
+    setStudentList(newStudentList);
+  }
+
   return (
     <ThemeProvider theme={theme}> <br />
       <div className="view-tabs">
@@ -156,8 +173,8 @@ function App() {
         {view === 'schedule' ?
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <div className="horiz-box">
-              <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList} />
-              <UploadResponses rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
+              <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={handleUpload} />
+              <UploadResponses rerender={() => setDummy(true)} studentList={studentList} setStudentList={handleUpload}/>
               <Button variant="contained" component="label" color="error" onClick={clearStorage} title="delete all student info, will not repopulate on refresh">Clear Saved Data</Button>
             </div>
             <div className="horiz-box">
