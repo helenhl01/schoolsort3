@@ -99,7 +99,6 @@ function App() {
   function createHandleDragEnd({ schools, studentList, setStudentList }) {
     return function handleDragEnd(event) {
       const { over, active } = event;
-      console.log(event);
       if (!over || !active) return;
 
       const dest = schools.find(s => s.name === over.id);
@@ -128,6 +127,10 @@ function App() {
     setSelectedStudent(updated);
   }
 
+  function deleteStudent(toDelete){
+    setStudentList(prev => prev.filter(s => s !== toDelete));
+  }
+
   return (
     <ThemeProvider theme={theme}> <br />
       <div className="view-tabs">
@@ -138,12 +141,14 @@ function App() {
         {view === 'schedule' ?
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <div className="horiz-box">
-              <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
+              <UploadFile rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList} />
               <UploadResponses rerender={() => setDummy(true)} studentList={studentList} setStudentList={setStudentList}/>
-              <Button variant="contained" component="label" color="primary" onClick={ () => download(times)}>Generate File</Button>
+              <Button variant="contained" component="label" color="error" onClick={clearStorage} title="delete all student info, will not repopulate on refresh">Clear Saved Data</Button>
+            </div>
+            <div className="horiz-box">
               <Sort studentList={studentList} setStudentList={setStudentList}/>
-              <Button variant="contained" component="label" color="primary" onClick={schoolReports}>School Reports</Button>
-              <Button variant="contained" component="label" color="error" onClick={clearStorage}>Clear Saved Data</Button>
+              <Button variant="contained" component="label" color="primary" onClick={schoolReports} title="console print school reports (num students assigned, capacity, num rides, student list)">School Reports</Button>
+              <Button variant="contained" component="label" color="primary" onClick={ () => download(times)} title="download JSON save file and CSV roster spreadsheet">Download Files</Button>
             </div>
             <br/>
             <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent} changedEids={changedEids}/>
@@ -152,7 +157,7 @@ function App() {
           <SpreadsheetView studentList={studentList} schools={schools} times={times} onSelectStudent={setSelectedStudent} changedEids={changedEids}/>
         }
       </div>
-      <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)} onSave={updateStudent}/>
+      <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)} onSave={updateStudent} onDelete={deleteStudent}/>
     </ThemeProvider>
   );
 }

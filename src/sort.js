@@ -23,10 +23,8 @@ function Sort({studentList, setStudentList}) {
     };
 
     return (
-    <div>
-        <Button variant="contained" component="label" color="primary" onClick={handleSortClick}> Sort
+        <Button variant="contained" component="label" color="primary" onClick={handleSortClick} title="assign unsorted students to schools"> Sort
         </Button>
-    </div>
     );
 }
 

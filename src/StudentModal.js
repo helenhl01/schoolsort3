@@ -82,7 +82,7 @@ function formatAvailability(student){
   return AVAILABILITY_FIELDS.filter(([key]) => student[key]).map(([, label]) => label).join(", ");
 }
 
-function StudentModal({student, onClose, onSave}){
+function StudentModal({student, onClose, onSave, onDelete}){
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(null);
 
@@ -118,6 +118,13 @@ function StudentModal({student, onClose, onSave}){
   function handleCancel(){
     setIsEditing(false);
     setDraft(null);
+  }
+
+  function handleDelete(){
+    if(window.confirm(`Delete ${student.firstName} ${student.lastName}? This cannot be undone.`)){
+      onDelete(student);
+      onClose();
+    }
   }
 
   if(!student){ return null; }
@@ -258,6 +265,9 @@ function StudentModal({student, onClose, onSave}){
             <button type="button" className="modal-save-btn" onClick={handleSave}>Save</button>
             <button type="button" className="modal-cancel-btn" onClick={handleCancel}>Cancel</button>
           </div>
+        }
+        {isEditing &&
+          <button type="button" className="modal-delete-btn" onClick={handleDelete}>Delete</button>
         }
       </div>
     </div>

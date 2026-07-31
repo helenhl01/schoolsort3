@@ -32,11 +32,9 @@ function UploadFile({ rerender, studentList, setStudentList }) {
 
 
   return (
-    <div>
-      <Button variant="contained" component="label" color="primary">Upload File
-        <input type="file" name="file" hidden onChange={onChangeHandler} />
-      </Button>
-    </div>
+    <Button variant="contained" component="label" color="primary" title="upload JSON format save file to repopulate students">Upload JSON
+      <input type="file" name="file" hidden onChange={onChangeHandler} />
+    </Button>
   );
 }
 
@@ -90,6 +88,7 @@ function download(times){
   }
   const csv = csvRows.join("\r\n");
 //export unsorted students to json but not csv
+//if response csv uploaded,extra info (like birthdays etc) discarded
   const fileData = JSON.stringify(students);
   const blob = new Blob([fileData], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
@@ -126,11 +125,9 @@ function UploadResponses({ rerender, studentList, setStudentList }) {
     }; 
 
   return (
-    <div>
-      <Button variant="contained" component="label" color="primary">Upload Responses
-        <input type="file" name="file" hidden onChange={onChangeHandler} />
-      </Button>
-    </div>
+    <Button variant="contained" component="label" color="primary" title="upload CSV format student form response spreadsheet (manually add PO and exec columnsand add in manual assignments)">Upload CSV
+      <input type="file" name="file" hidden onChange={onChangeHandler} />
+    </Button>
   );
 }
 

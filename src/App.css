@@ -5,6 +5,7 @@
 .horiz-box {
   display: flex;
   flex-direction: row;
+  gap: 8px;
   margin: 10px;
 }
 
@@ -288,6 +289,24 @@
 .modal-cancel-btn {
   background-color: #E5E7E9;
   color: #333;
+}
+
+.modal-delete-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 0;
+  border-radius: 4px;
+  border: none;
+  background-color: #C0392B;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.modal-delete-btn:hover {
+  background-color: #922B21;
 }
 
 .modal-header {
