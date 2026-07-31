@@ -1,5 +1,5 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import AllTimeSlots from './timeSlots.js';
 import { SCHOOLS as INITIAL_SCHOOLS, TIMES as INITIAL_TIMES } from './configs';
 import Button from '@mui/material/Button';
@@ -52,6 +52,23 @@ function App() {
   const [times, setTimes] = useState(INITIAL_TIMES);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [view, setView] = useState('schedule');
+
+  // Snapshot each student's assignment exactly once, on first render - this is the
+  // "since last refresh" baseline. A ref (not state) because it must never itself trigger
+  // a re-render or be recomputed later; the lazy-init-in-render pattern (checking .current
+  // and setting it inline) guarantees it's captured before the first paint, unlike a
+  // useEffect version which would run one render too late.
+  const initialAssignmentsRef = useRef(null);
+  if (initialAssignmentsRef.current === null) {
+    initialAssignmentsRef.current = new Map(studentList.map(s => [s.eid, s.schoolName]));
+  }
+
+  // Students whose current schoolName no longer matches that baseline - covers drag-and-drop,
+  // the modal edit, and the Sort button alike, since all three ultimately just change studentList.
+  const changedEids = useMemo(() => {
+    const baseline = initialAssignmentsRef.current;
+    return new Set(studentList.filter(s => baseline.get(s.eid) !== s.schoolName).map(s => s.eid));
+  }, [studentList]);
 
   // require a small pointer move before dnd-kit starts a drag, so a plain click on a student (no movement) still fires a click event to open the modal
   const sensors = useSensors(
@@ -129,10 +146,10 @@ function App() {
               <Button variant="contained" component="label" color="error" onClick={clearStorage}>Clear Saved Data</Button>
             </div>
             <br/>
-            <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent}/>
+            <AllTimeSlots schools={schools} setSchools={setSchools} times={times} setTimes={setTimes} studentList={studentList} onSelectStudent={setSelectedStudent} changedEids={changedEids}/>
           </DndContext>
           :
-          <SpreadsheetView studentList={studentList} schools={schools} times={times} onSelectStudent={setSelectedStudent}/>
+          <SpreadsheetView studentList={studentList} schools={schools} times={times} onSelectStudent={setSelectedStudent} changedEids={changedEids}/>
         }
       </div>
       <StudentModal student={selectedStudent} onClose={() => setSelectedStudent(null)} onSave={updateStudent}/>

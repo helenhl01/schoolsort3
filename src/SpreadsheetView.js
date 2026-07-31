@@ -34,6 +34,9 @@ function buildFilterCategories(schools, times) {
         { value: "Complete", label: "Complete" },
         { value: "Incomplete", label: "Incomplete" },
       ] },
+    { key: "changed", label: "Changed", options: [
+        { value: true, label: "Changed this session" },
+      ] },
   ];
 }
 
@@ -124,7 +127,7 @@ function makeComparator(sortKey, schoolTimeOf, times) {
 // A student passes if, for every category with at least one selected value, the student's
 // value for that category is one of the selected ones (OR within a category). Categories
 // with nothing selected are skipped, so all active categories combine as AND.
-function matchesFilters(student, activeFilters, schoolTimeOf) {
+function matchesFilters(student, activeFilters, schoolTimeOf, changedEids) {
   for (const [category, values] of Object.entries(activeFilters)) {
     if (!values || values.size === 0) continue;
     let studentValue;
@@ -132,6 +135,7 @@ function matchesFilters(student, activeFilters, schoolTimeOf) {
     else if (category === "school") studentValue = student.schoolName || "Unsorted";
     else if (category === "po") studentValue = studentRole(student);
     else if (category === "trainingStatus") studentValue = student.trainingComplete ? "Complete" : "Incomplete";
+    else if (category === "changed") studentValue = changedEids.has(student.eid);
     if (!values.has(studentValue)) return false;
   }
   return true;
@@ -145,7 +149,7 @@ function bubbleLabel(category, value, filterCategories) {
   return option ? option.label : String(value);
 }
 
-function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
+function SpreadsheetView({ studentList, schools, times, onSelectStudent, changedEids }) {
   const [orderedList, setOrderedList] = useState(studentList);
   const [activeFilters, setActiveFilters] = useState({});
   const [sortColumn, setSortColumn] = useState(null);
@@ -192,8 +196,8 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
   // The visible rows: orderedList filtered down by the active filters. Recomputed only when
   // the order or the filters actually change, not on every render (e.g. hovering a menu item).
   const filteredList = useMemo(
-    () => orderedList.filter(s => matchesFilters(s, activeFilters, schoolTimeOf)),
-    [orderedList, activeFilters, schoolTimeOf]
+    () => orderedList.filter(s => matchesFilters(s, activeFilters, schoolTimeOf, changedEids)),
+    [orderedList, activeFilters, schoolTimeOf, changedEids]
   );
 
   // Re-sorts orderedList by the given comparator, stably - ties keep whatever relative order
@@ -274,6 +278,15 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
     navigator.clipboard.writeText(emails.join(", "));
   }
 
+  // Same idea as handleCopyEmails, but for EIDs - every selected student has one, so there's
+  // no need to skip anyone.
+  function handleCopyEids() {
+    const eids = orderedList
+      .filter(s => selectedIds.has(s.eid))
+      .map(s => s.eid);
+    navigator.clipboard.writeText(eids.join(", "));
+  }
+
   return (
     <div className="spreadsheet-view">
       <div className="spreadsheet-toolbar" ref={menuRef}>
@@ -327,14 +340,25 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
           )}
         </div>
 
-        <button
-          type="button"
-          className="copy-emails-btn"
-          disabled={selectedIds.size === 0}
-          onClick={handleCopyEmails}
-        >
-          Copy emails{selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}
-        </button>
+        <div className="spreadsheet-copy-actions">
+          <button
+            type="button"
+            className="copy-emails-btn"
+            disabled={selectedIds.size === 0}
+            onClick={handleCopyEmails}
+          >
+            Copy emails{selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}
+          </button>
+
+          <button
+            type="button"
+            className="copy-emails-btn"
+            disabled={selectedIds.size === 0}
+            onClick={handleCopyEids}
+          >
+            Copy EIDs{selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}
+          </button>
+        </div>
       </div>
 
       <div className="spreadsheet-table-wrap">
@@ -374,10 +398,11 @@ function SpreadsheetView({ studentList, schools, times, onSelectStudent }) {
         {filteredList.map((student, index) => (
           <div
             key={student.eid}
-            className={`spreadsheet-grid spreadsheet-row ${index % 2 ? "spreadsheet-row-alt" : ""}`}
+            className={`spreadsheet-grid spreadsheet-row ${index % 2 ? "spreadsheet-row-alt" : ""} ${changedEids.has(student.eid) ? "spreadsheet-row-changed" : ""}`}
             style={{ gridTemplateColumns: `28px ${columnWidths}` }}
             role="button"
             tabIndex={0}
+            title={changedEids.has(student.eid) ? "Assignment changed this session" : undefined}
             onClick={() => onSelectStudent(student)}
           >
             <div className="spreadsheet-select-cell" onClick={e => e.stopPropagation()}>

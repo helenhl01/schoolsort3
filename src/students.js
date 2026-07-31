@@ -1,7 +1,7 @@
 import {SCHOOLS, TIMES, AVAILABILITY_FIELDS} from './configs.js';
 import {useDraggable} from '@dnd-kit/core';
 
-function RenderStudent({student, onSelectStudent}){
+function RenderStudent({student, onSelectStudent, changed}){
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
       id: student.eid, //do i need to change id?
       //data: student.schoolName,
@@ -19,8 +19,9 @@ function RenderStudent({student, onSelectStudent}){
   return (
     <div >
     <div key={student.eid} id={student.eid} role="button" ref={setNodeRef} style={style} {...listeners} {...attributes} className={`student tooltip ${student.po ? "po" : ""} ${student.exec ? "exec" : ""}`}>
+      {changed && <span className="changed-dot" title="Assignment changed this session" />}
       <p className="studentName" onClick={() => onSelectStudent(student)}>{student.firstName + " " + student.lastName}</p>
-      {tooltip(student)} 
+      {tooltip(student)}
     </div>
     </div>
   );

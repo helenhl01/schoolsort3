@@ -38,7 +38,7 @@ function SchoolInfoIcon({school}){
   );
 }
 
-function RenderSchool({school, studentList, onSelectStudent}){
+function RenderSchool({school, studentList, onSelectStudent, changedEids}){
   const {isOver, setNodeRef} = useDroppable({
     id: school.name,
   });
@@ -48,12 +48,12 @@ function RenderSchool({school, studentList, onSelectStudent}){
     return (
         <div className={`school  ${school.time == 'unsorted' ? "hidden" : ""}`} ref={setNodeRef} style={style} key={school.name} id={school.name}>
             <p className="schoolNameText" >{school.name}<SchoolInfoIcon school={school} /></p>
-            {studentList.filter(s => s.schoolName === school.name).map(student => <RenderStudent key={student.eid} student={student} onSelectStudent={onSelectStudent} />)}
+            {studentList.filter(s => s.schoolName === school.name).map(student => <RenderStudent key={student.eid} student={student} onSelectStudent={onSelectStudent} changed={changedEids.has(student.eid)} />)}
         </ div>
     );
 }
 
-function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSelectStudent}){
+function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSelectStudent, changedEids}){
   //const [timesWithSchools, setTimesWithSchools] = useState([]);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSele
         (<div className={`timeSlot  ${Math.floor(index / 4) % 2 ? (index % 2 ? "orangeTimeSlot" : "") : (index % 2 ? "" : "orangeTimeSlot")} ${time.timeName === "Unsorted"?"unsortedSlot" : ""}`} key={time.id}>
         <h4 >{time.timeName}</h4>
         {time.schools.map((school) =>
-          (<RenderSchool key={school.name} school={school} studentList={studentList} onSelectStudent={onSelectStudent}/>)
+          (<RenderSchool key={school.name} school={school} studentList={studentList} onSelectStudent={onSelectStudent} changedEids={changedEids}/>)
         )}
         </div>)
       )}
