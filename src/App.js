@@ -23,6 +23,13 @@ function loadStudentList(){
   }
 }
 
+// Collapses every "not really assigned" spelling (missing, empty string, or the literal
+// string "Unsorted" that AllTimeSlots writes back onto unassigned students) into a single
+// value, so comparisons can't tell those apart as if one were a real assignment change.
+function normalizeSchoolName(schoolName){
+  return (!schoolName || schoolName === "Unsorted") ? undefined : schoolName;
+}
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -60,14 +67,22 @@ function App() {
   // useEffect version which would run one render too late.
   const initialAssignmentsRef = useRef(null);
   if (initialAssignmentsRef.current === null) {
-    initialAssignmentsRef.current = new Map(studentList.map(s => [s.eid, s.schoolName]));
+    initialAssignmentsRef.current = new Map(studentList.map(s => [s.eid, normalizeSchoolName(s.schoolName)]));
   }
 
   // Students whose current schoolName no longer matches that baseline - covers drag-and-drop,
   // the modal edit, and the Sort button alike, since all three ultimately just change studentList.
+  // Both sides go through normalizeSchoolName so "never assigned" and "assigned to Unsorted" read
+  // as the same thing - AllTimeSlots's populate effect silently rewrites an unassigned student's
+  // schoolName from undefined/"" to the literal string "Unsorted" as bookkeeping, and without this
+  // normalization that rewrite alone (with no real assignment change) would look like a change.
   const changedEids = useMemo(() => {
     const baseline = initialAssignmentsRef.current;
-    return new Set(studentList.filter(s => baseline.get(s.eid) !== s.schoolName).map(s => s.eid));
+    return new Set(
+      studentList
+        .filter(s => baseline.get(s.eid) !== normalizeSchoolName(s.schoolName))
+        .map(s => s.eid)
+    );
   }, [studentList]);
 
   // require a small pointer move before dnd-kit starts a drag, so a plain click on a student (no movement) still fires a click event to open the modal
