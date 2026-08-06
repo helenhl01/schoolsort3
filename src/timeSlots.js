@@ -54,15 +54,13 @@ function RenderSchool({school, studentList, onSelectStudent, changedEids}){
 }
 
 function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSelectStudent, changedEids}){
-  //const [timesWithSchools, setTimesWithSchools] = useState([]);
 
   useEffect(() => {
-    //console.log("effect hook run");
     const updatedSchools = schools.map(school => ({
       ...school,
       studentList: [],
-      students : 0, //if a student remains unsorted, they may not be counted?
-      rides : 0, //have to reset
+      students : 0,
+      rides : 0,
     }));
 
     for (const student of studentList) {
@@ -70,7 +68,7 @@ function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSele
       const assignedSchool = isUnassigned
         ? updatedSchools.find(s => s.name === "Unsorted")
         : updatedSchools.find(s => s.name === student.schoolName);
-      if (assignedSchool) { //check if this is true for unsorted students
+      if (assignedSchool) { 
         assignedSchool.studentList.push(student);
         assignedSchool.students++;
         if(student.carSpace){
@@ -85,10 +83,8 @@ function AllTimeSlots({schools, setSchools, times, setTimes, studentList, onSele
       schools: updatedSchools.filter(school => school.time === time.id)
     }));
     setTimes(populatedTimes);
-    //console.log(populatedTimes);
     setSchools(updatedSchools);
-   // console.log(updatedSchools); //students are being added to unsorted's studentlist but they shouldn't be
-  }, [studentList]); //change to only dependent on studentList?
+  }, [studentList]); 
 
   return (
     <div className="time-slots-container">

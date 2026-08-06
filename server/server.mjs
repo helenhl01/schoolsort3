@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import { SCHOOLS, TIMES } from '../src/configs.js'; //right now server is receiving hard coded configs and updating them in server, but not returning updated school lists. rest of code is using school state variables and udpating based on studentList state (in timeSlots useEffect). later update server to update state too?
+import { SCHOOLS, TIMES } from '../src/configs.js';
 
 const app = express();
 
@@ -10,21 +10,16 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
-app.get("/", function(req, res) {
-  res.send("It's working!")
-})
-
 app.listen(8000, () => {
   console.log("app listening on port 8000")
 })
-
 
 var upload = multer({ //multer middleware to handle file uploads
     fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/json') {
       cb(null, true);
     } else {
-      cb(new Error('Only JSON files are allowed.')); //change this to a conditional depending on which button pushed, then send json object without reconverting to file
+      cb(new Error('Only JSON files are allowed.')); //csv files are converted to json internally
     }
   },}).single('file')
 
@@ -72,44 +67,23 @@ function buildSchools(studentList){ // reconstruct school rosters/counts from st
 }
 
 function sort(studentList, schools){  //rn no regard to school capacity
-  //loop below for loop while schools are not full or students are not sorted, chnage stopping conditions
-  //can't handle if number of students available and requested are not the same, will need to hard code so that it is
-  while(!doneSorting(studentList, schools) ){ 
+  while(!doneSorting(studentList, schools) ){ //maybe implement a second round to correct first round sort? in first round don't allow schools to go over ccap, then in second round do?
     for(const school of schools.filter(s => s.name !== "Unsorted").sort((a, b) => schoolFull(a) - schoolFull(b))){
       if(school.name == "Unsorted"){ break } //if reached the end of the list (unsorted group), end and start over at beginnign 
       let studentAdded = false;
-      const rejectedOffers = new Set(); //  make set to store students who reject
+      const rejectedOffers = new Set(); // make set to store students who reject
       while(!studentAdded){
-        const st = nextBestStudent(school, studentList, rejectedOffers);//  school finds best student
+        const st = nextBestStudent(school, studentList, rejectedOffers); // school finds best student
         if(!st){break}
-        if(studentAccept(school, st, schools)){//  school makes offer
-          if(studentAssigned(st)){ //if student is already assigned but this offer is better
-            removeStudent(schools.find(sch => sch.name === st.schoolName), st);  //remove from prev school
-            console.log(st.eid + " is being removed from " + st.schoolName);
-          }
-          addStudent(school, st);//     if student accepts, add student and move to next school
+        if(studentAccept(school, st, schools)){ // school makes offer
+          if(studentAssigned(st)){removeStudent(schools.find(sch => sch.name === st.schoolName), st);}//if student is already assigned but this offer is better remove from prev school
+          addStudent(school, st); //if student accepts, add student and move to next school
           studentAdded = true;
-          //break; //do i need both of these stopping conditions m, do i need to break outside of this while loop
         }
-        //console.log(`${st.eid} has rejected ${school.name}'s offer`);
-        rejectedOffers.add(st.eid);//     if student rejects, add student to set, find next best student and loop until student accepts
+        rejectedOffers.add(st.eid);//  if student rejects, add student to set, find next best student and loop until student accepts
       } 
     }   
-
-      // find a way to handle unmatched students at the endc, are they autoamtically added to unsorted in the front end/
-      /*let i = 0; //student list iterator
-      for(i = 0; i < studentList.length; i++){ // add one student per round
-        if(schoolOffer(school, studentList[i])){ //if school has preference for the student 
-          if(studentAccept(school, studentList[i])){ //if student has preference for the school
-            addStudent(school, studentList[i]);
-            break; //next school
-          }
-        }
-      }
-    } */
-    //round++;
   }
-  console.log("done sorting")
   checkForDuplicates;
   return studentList;
 }
@@ -133,13 +107,11 @@ function studentAssigned(student){
   return name && name !== "unsorted";
 }
 
-//should i stop making offers once school is full? or should i let algo keep runnign
-function nextBestStudent(school, studentList, rejectedOffers){ //but if i do this wont there be sone students who never get fofers, maybe i should do the  next best until one student accpets at least
-  let best = null;
+function nextBestStudent(school, studentList, rejectedOffers){
   let bestRank = -1;
 
   for(const cur of studentList){
-    if(rejectedOffers.has(cur.eid)) continue;
+    if(rejectedOffers.has(cur.eid)) continue; //what happens to students in rejected offers? does this set actually do anything or just prevent school from reoffering
 
     const rank = schoolRankStudent(school, cur);
     if(best === null || rank > bestRank){
@@ -148,24 +120,11 @@ function nextBestStudent(school, studentList, rejectedOffers){ //but if i do thi
     }
   }
   return best;
-  /*const remaining = studentList.filter(s => !offersMade.has(s.eid)); //this line needs to change
-  if(remaining.length === 0) return null; //?change
-
-  const best = remaining.reduce((best, current) => {
-    return schoolRankStudent(school, current) > schoolRankStudent(school, best) ? current : best
-  });
-  offersMade.add(best.eid); //cjhange id, only add offers rejected?
-  return best; */
-  
-  /*return studentList.reduce((best, current) => {
-    return schoolRankStudent(school, current) > schoolRankStudent(school, best)
-      ? current
-      : best;
-  });*/
 }
+
 function schoolOffer(school, student){
-    if (schoolRankStudent(school, student) >=2){ //wouldn't it be the same for all rounds idk, for how many rounds do i need. maybe go thorugh and do all the same, and just find the highest rank each time and hope that all students get an offer? idk this is what i will do for now.
-      return true; //rn rank 2 and 3 are functionally the same
+    if (schoolRankStudent(school, student) >=2){ 
+      return true; //rn rank 2 and 3 are functionally the same, fix this later. maybe prioritize 3 in first round
     }
   if(schoolRankStudent(school, student) >=1) {return true;}
   return false;
@@ -176,9 +135,7 @@ function studentAccept(school, student, schools){ //checking availability
   if (newRank === 0) return false;
   if(studentAssigned(student)){
     let prevSchool = schools.find(sch => sch.name === student.schoolName);
-    //console.log(schoolRankStudent(school, student) + " " + schoolRankStudent(prevSchool, student));
     if(schoolRankStudent(school, student) > schoolRankStudent(prevSchool, student)){
-      console.log(school.name + " has ranked " + student.firstName + " higher than " + prevSchool.name);
       return true;
     }
     return false; //if new school and old school are ranked the same, student will not be moved
@@ -199,10 +156,9 @@ function addStudent(school, student){
   return;
 }
 
-function removeStudent(school, student){ //rn ranks are the same so no students are being reassigned
+function removeStudent(school, student){ 
   if(!school.studentList.includes(student)){return}
   school.studentList.splice(school.studentList.indexOf(student), 1);
-  //console.log(student.firstName + " " + student.lastName + " has been removed from " + school.name);
   return;
 }
 
@@ -226,7 +182,7 @@ function studentRankSchool(school, student){
   if (!school) {
     console.error("Attempting to rank an undefined school", school);
   }
-  return student[school.time]; //does not support time pref
+  return student[school.time]; //does not support time pref atm
 }
 
 function schoolFull(school){
@@ -239,6 +195,5 @@ function schoolFull(school){
 function doneSorting(studentList, schools){
   let done = false;
   done = !schools.some(sch => sch.students < sch.capacity) || !studentList.some(st => !studentAssigned(st));
-  return done; //this makes it keep going while not all schools or students returned, find a better way to show finished. maybe have round counter
-  //oh this is how i have it returning? that's problematic h
+  return done; //done if all schools reach capacity or students sorted
 }

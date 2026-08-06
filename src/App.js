@@ -23,9 +23,7 @@ function loadStudentList(){
   }
 }
 
-// Collapses every "not really assigned" spelling (missing, empty string, or the literal
-// string "Unsorted" that AllTimeSlots writes back onto unassigned students) into a single
-// value, so comparisons can't tell those apart as if one were a real assignment change.
+// all non-assignments assigned same undefined value
 function normalizeSchoolName(schoolName){
   return (!schoolName || schoolName === "Unsorted") ? undefined : schoolName;
 }
@@ -42,10 +40,6 @@ const theme = createTheme({
       contrastText: '#000',
       //darker: '#FAD7A0',
     },
-    /*neutral: { 
-      main: '#64748B',
-      contrastText: '#fff',
-    }, */
   },
 });
 
@@ -60,14 +54,8 @@ function App() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [view, setView] = useState('schedule');
 
-  // Each student's baseline is captured the first time their eid is ever seen in
-  // studentList this session - not just once at mount. That covers both the students
-  // loaded from localStorage at page load AND students who first appear later via a
-  // mid-session upload (their baseline is however they arrived in that file, not "unset").
-  // A ref (not state) because recording a baseline must never itself trigger a re-render;
-  // running this directly in the render body (not an effect) guarantees any newly-arrived
-  // students get their baseline locked in during the very same render that introduces them,
-  // before AllTimeSlots's populate effect gets a chance to touch their schoolName.
+
+  //set baseline map of all students first time they populate, including from localstorage if not already in the map
   const initialAssignmentsRef = useRef(new Map());
   for (const s of studentList) {
     if (!initialAssignmentsRef.current.has(s.eid)) {
@@ -75,18 +63,13 @@ function App() {
     }
   }
 
-  // Students whose current schoolName no longer matches their baseline - covers drag-and-drop,
-  // the modal edit, and the Sort button alike, since all three ultimately just change studentList.
-  // Both sides go through normalizeSchoolName so "never assigned" and "assigned to Unsorted" read
-  // as the same thing - AllTimeSlots's populate effect silently rewrites an unassigned student's
-  // schoolName from undefined/"" to the literal string "Unsorted" as bookkeeping, and without this
-  // normalization that rewrite alone (with no real assignment change) would look like a change.
-  const changedEids = useMemo(() => {
+  // Students whose current schoolName no longer matches their baseline 
+  const changedEids = useMemo(() => { //only runs when studentlist changes, not any other rerenders
     const baseline = initialAssignmentsRef.current;
     return new Set(
       studentList
         .filter(s => baseline.get(s.eid) !== normalizeSchoolName(s.schoolName))
-        .map(s => s.eid)
+        .map(s => s.eid) //returns set of students who don't match their baseline school assignment (mapped on upload)
     );
   }, [studentList]);
 
@@ -96,26 +79,16 @@ function App() {
     useSensor(KeyboardSensor)
   );
 
-  function schoolReports(){ //simplify this function
-    const grouped = {};
-
-    for (const student of studentList){
-      const schoolName = student.schoolName || "Unsorted"; //i don't t hink it's actually handling unsorted correctly, later count how many assigned?
-      if(!grouped[schoolName]){
-        grouped[schoolName] = [];
-      }
-      grouped[schoolName].push(student);
-    }
-
+  function schoolReports(){ //console print all school capacities, num students, num rides, student list
     for(const school of schools){
-      const students = grouped[school.name] || [];
+      const students = studentList.filter(s=> (s.schoolName || "Unsorted") === school.name);
       const rides = students.reduce((acc, s) => acc + (s.carSpace || 0), 0);
-
       console.log(`${school.name} has ${students.length} / ${school.capacity} students and ${rides} rides.`);
       console.log(students);
     }
   }
 
+  //handle drop and transfer student school
   function createHandleDragEnd({ schools, studentList, setStudentList }) {
     return function handleDragEnd(event) {
       const { over, active } = event;
@@ -125,13 +98,13 @@ function App() {
       const student = studentList.find(s => s.eid === active.id);
       
       if (!dest || !student) return;
-      //console.log("dragging " + student.eid + " from " + student.schoolName + " to " + dest.name);
+
       dataTransfer({ student, dest, studentList, setStudentList });
     };
   }
   const handleDragEnd = createHandleDragEnd({ schools, studentList, setStudentList });
 
-  useEffect(() => {
+  useEffect(() => { //save to localbrowser storage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(studentList));
   }, [studentList]);
 
@@ -142,6 +115,7 @@ function App() {
     }
   }
 
+  // replace selected student's information with updated draft information
   function updateStudent(updated){
     setStudentList(prev => prev.map(s => s === selectedStudent ? updated : s));
     setSelectedStudent(updated);
@@ -151,13 +125,8 @@ function App() {
     setStudentList(prev => prev.filter(s => s !== toDelete));
   }
 
-  // A fresh upload is a new "how they started" source of truth, not an edit - it should wipe
-  // the changed-session baseline and start over, rather than let per-eid entries from a PRIOR
-  // upload linger and get compared against a completely different file's data (e.g. uploading
-  // a CSV of survey responses, which never carries assignments, over a JSON roster that did
-  // have real assignments - every student would otherwise look like they'd been unassigned).
-  // Only wired up to the two upload components below; Sort/drag-and-drop/the modal still use
-  // the plain setStudentList, since those genuinely should count as changes within a session.
+  // upon upload, all student assignments are stored in initialAssignmentsRef map to track if assignment changes have been made in the current session
+  //replaces whole map even if students already existed before
   function handleUpload(newStudentList){
     initialAssignmentsRef.current = new Map(newStudentList.map(s => [s.eid, normalizeSchoolName(s.schoolName)]));
     setStudentList(newStudentList);

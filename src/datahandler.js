@@ -1,10 +1,8 @@
 import axios from 'axios';
-//import { addStudent } from './students.js';
 import Button from '@mui/material/Button';
 import {TIMES} from './configs.js';
 import { useRef, useEffect } from "react";
 import Papa from 'papaparse';
-//import { parse } from 'papaparse';
 
 function UploadFile({ rerender, studentList, setStudentList }) {
   const onChangeHandler = (event) => {
@@ -19,17 +17,7 @@ function UploadFile({ rerender, studentList, setStudentList }) {
         setStudentList(studentList);
         return studentList;
       })
-      /*.then(studentList => {
-        const data = {
-          studentList: studentList,
-        };
-        return axios.post("http://localhost:8000/sort", data); // Use studentList in the second then block
-      })
-      .then(response => {
-        //rerender(); // Call rerender here if needed after both requests finish
-      });*/
     };
-
 
   return (
     <Button variant="contained" component="label" color="primary" title="upload JSON format save file to repopulate students">Upload JSON
@@ -51,7 +39,7 @@ function csvEscape(value) {
 }
 
 function toCsvRow(fields) {
-  return fields.map(csvEscape).join(",");
+  return fields.map(csvEscape).join(","); //comma separates fields after making sure wrapped in quotes if needed
 }
 
 function studentRole(student) {
@@ -65,13 +53,13 @@ function download(times){
   const csvRows = [toCsvRow(CSV_HEADERS)];
   for (const time of times) {
     for (const sch of time.schools){
-      if(sch.name === "Unsorted"){ //necessary?
+      if(sch.name === "Unsorted"){ 
         for(const st of sch.studentList){
           students.push(st);}
         continue;
-      } //don't export unsorted students to csv
+      } //export unsorted students to json but not csv
       for (const st of sch.studentList) {
-        students.push(st); //do i do anything w this array?
+        students.push(st);
         csvRows.push(toCsvRow([
           time.timeName,
           sch.name,
@@ -87,9 +75,8 @@ function download(times){
     }
   }
   const csv = csvRows.join("\r\n");
-//export unsorted students to json but not csv
 //if response csv uploaded,extra info (like birthdays etc) discarded
-  const fileData = JSON.stringify(students);
+  const fileData = JSON.stringify(students); //json save file with all kept information
   const blob = new Blob([fileData], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -97,7 +84,7 @@ function download(times){
   link.href = url;
   link.click();
 
-  const blob2 = new Blob([csv], { type: "text/plain" });
+  const blob2 = new Blob([csv], { type: "text/plain" }); //csv roster spreadsheet with extra info and unsorted students discarded
   const url2 = URL.createObjectURL(blob2);
   const link2 = document.createElement("a");
   link2.download = "seek-schedule.csv";
@@ -153,7 +140,7 @@ function parseFormResponses(text){
     T1: (parseAvailability(row, "tuesday1")), T2: (parseAvailability(row, "tuesday2")),
     W1: (parseAvailability(row, "wednesday1")), W2: (parseAvailability(row, "wednesday2")),
     R1: (parseAvailability(row, "thursday1")), R2: (parseAvailability(row, "thursday2")),
-//later add a field to save extra inputs, including car maybes
+//later add a field to save extra inputs, including car maybes and time preferences
   })
 )
   const deduped = keepLatestPerEid(formatted).map(({submittedAt, ...student}) => student);

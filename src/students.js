@@ -3,8 +3,7 @@ import {useDraggable} from '@dnd-kit/core';
 
 function RenderStudent({student, onSelectStudent, changed}){
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
-      id: student.eid, //do i need to change id?
-      //data: student.schoolName,
+      id: student.eid, //should be unique
     });
   let style = (transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
@@ -41,28 +40,6 @@ function RenderStudent({student, onSelectStudent, changed}){
       <span className="tooltiptext">{tooltiptext}</span> 
     );
   }
-
-  /*function addStudent(student){ //add student to school's studentList if school assigned, for render
-    var sch = SCHOOLS.find(school => school.name === student.schoolName);
-   if(!SCHOOLS.some(school => school.name === student.schoolName)){ //right now, during the first render, it is pulling an error for every student who is unsorted (no data in schoolName field)
-      console.log("Student " + student.eid + " is assigned to an invalid school or a school that does not exist");
-    }
-    if(!student.schoolName || !sch){ //add student to unsorted
-      sch = SCHOOLS.find(school => school.time === "unsorted");
-      sch.studentList.push(student);
-      sch.students++;
-    }
-    else{
-      if(!sch.studentList.includes(student)){ //if student not already in school's list, add tehm
-        sch.studentList.push(student);
-        sch.students++;
-        if(student.carSpace > 0){
-          sch.rides += student.carSpace;
-        }
-        console.log(student.eid + " added to " + sch.name);
-      }
-    }
-  }  */
-  //also add a boo lo say their placement will NOT be changed... maybe increase rank?
+  //also add a boo lo say their placement will NOT be changed... maybe increase rank? handle in server.
 
 export {RenderStudent};
