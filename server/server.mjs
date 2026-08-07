@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import bodyParser from 'body-parser';
+import { pathToFileURL } from 'url';
 import { SCHOOLS, TIMES } from '../src/configs.js';
 
 const app = express();
@@ -10,9 +11,9 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
-app.listen(8000, () => {
-  console.log("app listening on port 8000")
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  app.listen(8000, () => console.log("app listening on port 8000"));
+}
 
 var upload = multer({ //multer middleware to handle file uploads
     fileFilter: (req, file, cb) => {
@@ -23,7 +24,7 @@ var upload = multer({ //multer middleware to handle file uploads
     }
   },}).single('file')
 
-app.post('/upload', (req, res) =>{
+app.post('/api/upload', (req, res) =>{
   console.log("file uploaded");
   return processArray(req, res);
 })
@@ -40,7 +41,7 @@ const processArray = (req, res) => { //handles request. send json file and retur
     })
 }
 
-app.post('/sort', (req, res) =>{
+app.post('/api/sort', (req, res) =>{
   let studentList = req.body.studentList;
   const schools = buildSchools(studentList); // fresh working copy per request, never mutate the shared SCHOOLS config
   sort(studentList, schools);
@@ -109,7 +110,8 @@ function studentAssigned(student){
 
 function nextBestStudent(school, studentList, rejectedOffers){
   let bestRank = -1;
-
+  let best = null;
+  
   for(const cur of studentList){
     if(rejectedOffers.has(cur.eid)) continue; //what happens to students in rejected offers? does this set actually do anything or just prevent school from reoffering
 
@@ -197,3 +199,5 @@ function doneSorting(studentList, schools){
   done = !schools.some(sch => sch.students < sch.capacity) || !studentList.some(st => !studentAssigned(st));
   return done; //done if all schools reach capacity or students sorted
 }
+
+export default app;

@@ -6,7 +6,7 @@ function Sort({studentList, setStudentList}) {
         studentList: studentList,
     };
     const handleSortClick =  () => {
-        axios.post("http://localhost:8000/sort", { studentList })
+        axios.post("/api/sort", { studentList })
         .then(response => {
             console.log("Sort successful:", response.data); 
             setStudentList(response.data);

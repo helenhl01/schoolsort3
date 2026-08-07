@@ -10,9 +10,9 @@ function UploadFile({ rerender, studentList, setStudentList }) {
     let uploaded = new FormData();
     uploaded.append("file", selectedFile);
 
-    axios.post("http://localhost:8000/upload", uploaded)
+    axios.post("/api/upload", uploaded)
       .then(response => {
-        let studentList = response.data; //make global and accessible for when sort is called. 
+        let studentList = response.data; //make global and accessible for when sort is called.
         rerender();
         setStudentList(studentList);
         return studentList;
@@ -103,7 +103,7 @@ function UploadResponses({ rerender, studentList, setStudentList }) {
     let uploaded = new FormData();
     uploaded.append("file", jsonBlob, "parsed-responses.json");
 
-    axios.post("http://localhost:8000/upload", uploaded)
+    axios.post("/api/upload", uploaded)
       .then(response => {
         rerender();
         setStudentList(response.data);
